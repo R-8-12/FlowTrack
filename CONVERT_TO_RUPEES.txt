@@ -1,0 +1,54 @@
+================================================================================
+  CONVERT TO RUPEES (₹) AND ADD HISTORICAL GRAPH DATA
+================================================================================
+
+QUICK INSTRUCTIONS:
+
+1. Double-click: apply-rupees-and-history.bat
+
+2. Enter MySQL password when asked (default: root)
+
+3. Wait for "SUCCESS!" message
+
+4. Refresh your browser (Ctrl + F5)
+
+5. View the updated dashboard with:
+   - All prices in Rupees (₹)
+   - 15 days of historical graph data
+   - Date labels on graphs (Nov 1, Nov 2, etc.)
+
+================================================================================
+
+WHAT GETS UPDATED:
+
+✅ Item prices converted to Rupees (1 USD = ₹83)
+✅ Fine rates converted to Rupees
+✅ 15 days of historical data added to graphs
+✅ UI labels updated to show ₹ symbol
+
+================================================================================
+
+EXAMPLE CONVERSIONS:
+
+Ballpoint Pen:    $0.50  →  ₹41.50
+Notebook A4:      $2.50  →  ₹207.50
+Office Chair:   $150.00  →  ₹12,450.00
+Laptop:         $800.00  →  ₹66,400.00
+
+================================================================================
+
+GRAPH DATA ADDED:
+
+Nov 1-13, 2024 (15 days)
+- Realistic borrowing patterns
+- Return trends
+- Inventory changes
+- Daily snapshots
+
+================================================================================
+
+That's it! Your system is now ready with Indian Rupee pricing and historical trends.
+
+For detailed information, read: RUPEES_AND_HISTORY_GUIDE.md
+
+================================================================================

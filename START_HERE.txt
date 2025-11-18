@@ -1,0 +1,159 @@
+================================================================================
+  INVENTORY MANAGEMENT SYSTEM - MySQL Version
+  Permanent Data Storage Enabled!
+================================================================================
+
+CONGRATULATIONS! Your project now uses MySQL for permanent data storage.
+
+All your data (items, vendors, users, loans, graphs) will be saved permanently
+and will survive application restarts, computer restarts, and system updates!
+
+================================================================================
+  QUICK START GUIDE
+================================================================================
+
+STEP 1: Install MySQL (if not already installed)
+-------------------------------------------------
+Download MySQL 8.0 from:
+https://dev.mysql.com/downloads/installer/
+
+During installation:
+- Choose "Developer Default"
+- Set root password: root (or remember your password)
+- Keep default port: 3306
+
+STEP 2: Create Database
+------------------------
+Double-click: setup-mysql-database.bat
+
+This will create the 'ims_db' database automatically.
+
+STEP 3: Run Application
+------------------------
+Double-click: test-and-run.bat
+
+The application will:
+1. Connect to MySQL
+2. Create all tables automatically
+3. Insert sample data (first run only)
+4. Start on http://localhost:8087
+
+STEP 4: Login
+-------------
+Open browser: http://localhost:8087
+
+Default credentials:
+Username: admin
+Password: admin123
+
+================================================================================
+  WHAT'S DIFFERENT?
+================================================================================
+
+BEFORE (H2):                    AFTER (MySQL):
+❌ Data lost on restart         ✅ Data saved permanently
+❌ File-based storage           ✅ Professional database
+❌ Limited features             ✅ Full MySQL features
+❌ No backup tools              ✅ Easy backup/restore
+❌ Single application           ✅ Multi-application access
+
+================================================================================
+  VERIFY IT'S WORKING
+================================================================================
+
+1. Run the application
+2. Add a new inventory item
+3. Stop the application (Ctrl+C)
+4. Start it again
+5. Your item is still there! ✅
+
+================================================================================
+  CONFIGURATION
+================================================================================
+
+Database Settings (application.properties):
+- Database: ims_db
+- Host: localhost
+- Port: 3306
+- Username: root
+- Password: root
+
+To change password:
+Edit: src/main/resources/application.properties
+Change: spring.datasource.password=YOUR_PASSWORD
+
+================================================================================
+  BACKUP YOUR DATA
+================================================================================
+
+Create Backup:
+mysqldump -u root -p ims_db > backup.sql
+
+Restore Backup:
+mysql -u root -p ims_db < backup.sql
+
+================================================================================
+  TROUBLESHOOTING
+================================================================================
+
+Problem: "Access denied"
+Solution: Check password in application.properties
+
+Problem: "Unknown database"
+Solution: Run setup-mysql-database.bat
+
+Problem: "Connection failed"
+Solution: Start MySQL service
+  - Open Services (services.msc)
+  - Find MySQL80 or MySQL
+  - Click Start
+
+================================================================================
+  FILES INCLUDED
+================================================================================
+
+✅ setup-mysql-database.bat     - Creates MySQL database
+✅ setup-mysql.sql               - SQL script for database
+✅ test-and-run.bat              - Runs the application
+✅ MYSQL_SETUP_GUIDE.md          - Detailed setup instructions
+✅ MYSQL_MIGRATION_README.md     - Complete migration guide
+✅ application.properties         - MySQL configuration
+
+================================================================================
+  FEATURES
+================================================================================
+
+✅ Role-Based Access Control (ADMIN, MANAGER, STAFF, USER)
+✅ Inventory Management (Add, Edit, Delete items)
+✅ Vendor Management
+✅ Item Issuance & Returns
+✅ Real-Time Dashboard with Graphs
+✅ AI-Powered Chatbot (Gemini)
+✅ User Management
+✅ Reports & Analytics
+✅ Permanent MySQL Storage
+
+================================================================================
+  NEED HELP?
+================================================================================
+
+1. Read: MYSQL_SETUP_GUIDE.md (detailed instructions)
+2. Read: MYSQL_MIGRATION_README.md (troubleshooting)
+3. Check MySQL is running: sc query MySQL80
+4. Test connection: mysql -u root -p
+
+================================================================================
+  SUCCESS!
+================================================================================
+
+Your Inventory Management System is ready with permanent MySQL storage!
+
+All your data is now:
+✅ Permanently saved
+✅ Backed up easily
+✅ Accessible from other tools
+✅ Professional and scalable
+
+Enjoy your upgraded system! 🎉
+
+================================================================================

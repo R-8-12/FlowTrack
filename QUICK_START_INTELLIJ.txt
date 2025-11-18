@@ -1,0 +1,116 @@
+═══════════════════════════════════════════════════════════════
+  QUICK START - IntelliJ IDEA Setup (5 Minutes)
+═══════════════════════════════════════════════════════════════
+
+📍 PROJECT LOCATION:
+   D:\new inventory management\Major-Project-Invento-main - Copy
+
+═══════════════════════════════════════════════════════════════
+  STEP 1: OPEN PROJECT
+═══════════════════════════════════════════════════════════════
+
+1. Open IntelliJ IDEA
+2. File → Open
+3. Select: D:\new inventory management\Major-Project-Invento-main - Copy
+4. Click OK
+5. Wait for Maven import to complete (2-5 minutes)
+
+═══════════════════════════════════════════════════════════════
+  STEP 2: CONFIGURE JDK
+═══════════════════════════════════════════════════════════════
+
+1. File → Project Structure (Ctrl+Alt+Shift+S)
+2. Project → SDK → Select JDK 24
+   (If not listed: Add SDK → JDK → C:\Program Files\Java\jdk-24)
+3. Language level → 11 or higher
+4. Click Apply → OK
+
+═══════════════════════════════════════════════════════════════
+  STEP 3: CREATE RUN CONFIGURATION
+═══════════════════════════════════════════════════════════════
+
+1. Run → Edit Configurations...
+2. Click + → Application (first option)
+   Note: Use "Spring Boot" if available (IntelliJ Ultimate)
+3. Name: IMS Application
+4. Main class: com.example.IMS.ImsApApplication
+5. Use classpath of module: IMS-AP
+6. JRE: JDK 24
+7. Click Apply → OK
+
+═══════════════════════════════════════════════════════════════
+  STEP 4: VERIFY MYSQL
+═══════════════════════════════════════════════════════════════
+
+1. Press Windows + R
+2. Type: services.msc
+3. Find: MySQL80
+4. Ensure Status: Running
+5. If not running, right-click → Start
+
+═══════════════════════════════════════════════════════════════
+  STEP 5: RUN APPLICATION
+═══════════════════════════════════════════════════════════════
+
+1. Click green Run button (▶️) in top-right
+   OR press Shift + F10
+2. Wait for: "Started ImsApApplication in X seconds"
+3. Open browser: http://localhost:8087
+4. Login: admin / admin123
+
+═══════════════════════════════════════════════════════════════
+  ✅ DONE!
+═══════════════════════════════════════════════════════════════
+
+Application running at: http://localhost:8087
+
+Features:
+✓ All prices in Rupees (₹)
+✓ Fine Records working
+✓ Dashboard with charts
+✓ Chatbot enabled
+✓ Item management
+✓ Vendor management
+
+═══════════════════════════════════════════════════════════════
+  🔧 QUICK TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════
+
+Problem: Maven dependencies not downloading
+Solution: Right-click pom.xml → Maven → Reload Project
+
+Problem: Cannot resolve symbol errors
+Solution: File → Invalidate Caches → Invalidate and Restart
+
+Problem: Port 8087 already in use
+Solution: Stop running process or change port in application.properties
+
+Problem: MySQL connection error
+Solution: Check MySQL is running and credentials are correct
+
+═══════════════════════════════════════════════════════════════
+  📁 IMPORTANT FILES
+═══════════════════════════════════════════════════════════════
+
+Main Class:
+  src/main/java/com/example/IMS/ImsApApplication.java
+
+Configuration:
+  src/main/resources/application.properties
+
+Database Settings:
+  URL: jdbc:mysql://localhost:3306/ims
+  Username: root
+  Password: root
+  Port: 3306
+
+═══════════════════════════════════════════════════════════════
+  🎯 DEFAULT CREDENTIALS
+═══════════════════════════════════════════════════════════════
+
+Username: admin
+Password: admin123
+
+═══════════════════════════════════════════════════════════════
+
+For detailed instructions, see: INTELLIJ_SETUP_GUIDE.md
