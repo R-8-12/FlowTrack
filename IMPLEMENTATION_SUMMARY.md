@@ -1,5 +1,7 @@
 # Implementation Summary 🎉
 
+> Historical implementation snapshot. For current setup and runtime configuration, use `README.md` first.
+
 ## Overview
 Successfully implemented all 5 priority features for the Inventory Management System with role-based access control, authentication, AI chatbot integration, and complete user management.
 
