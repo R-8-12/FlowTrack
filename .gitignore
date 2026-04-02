@@ -143,6 +143,7 @@ application-prod.properties
 *password*
 !*example*
 !*template*
+!src/main/java/com/example/IMS/config/PasswordEncoderConfig.java
 
 # Logs
 logs/
