@@ -73,7 +73,7 @@
         </div>
 
         <div class="text-center mb-3">
-            <a th:href="@{/oauth2/authorization/google}" class="btn btn-light btn-sm px-3">
+            <a th:href="@{/register/vendor/google-start}" class="btn btn-light btn-sm px-3">
                 <i class="fab fa-google mr-1"></i> Continue with Google
             </a>
         </div>
@@ -99,6 +99,11 @@
                 <div th:if="${errorMessage}" class="alert alert-danger" style="border-radius:10px;" th:text="${errorMessage}"></div>
 
                 <form th:action="@{/register/vendor}" th:object="${vendorDto}" method="post" id="vendorForm">
+                    <input type="hidden" name="googleSignup" th:value="${googleSignup}">
+
+                    <div th:if="${googleSignup}" class="alert alert-info" style="border-radius:10px; border:none;">
+                        Signed in with Google. Complete the required business details to finish account setup.
+                    </div>
 
                     <!-- Alerts -->
                     <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" style="border-radius:10px; border:none;">
@@ -128,7 +133,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" th:if="${!googleSignup}">
                         <label for="username">
                             <i class="fas fa-user mr-1"></i> Username <span class="text-danger">*</span>
                         </label>
@@ -143,7 +148,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" th:if="${!googleSignup}">
                         <label for="email">
                             <i class="fas fa-envelope mr-1"></i> Email Address <span class="text-danger">*</span>
                         </label>
@@ -153,7 +158,7 @@
                         <div class="invalid-feedback" th:errors="*{email}"></div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="form-row" th:if="${!googleSignup}">
                         <div class="form-group col-md-6">
                             <label for="password">
                                 <i class="fas fa-lock mr-1"></i> Password <span class="text-danger">*</span>
@@ -176,6 +181,15 @@
                                    th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''">
                             <div class="invalid-feedback" th:errors="*{confirmPassword}"></div>
                         </div>
+                    </div>
+
+                    <div class="form-group" th:if="${googleSignup}">
+                        <label for="googleEmailPreview">Email Address</label>
+                        <input type="email" id="googleEmailPreview" class="form-control" th:value="*{email}" readonly>
+                        <input type="hidden" name="username" th:value="*{username}">
+                        <input type="hidden" name="email" th:value="*{email}">
+                        <input type="hidden" name="password" th:value="*{password}">
+                        <input type="hidden" name="confirmPassword" th:value="*{confirmPassword}">
                     </div>
 
                     <!-- ── SECTION 2: Company Details ── -->
@@ -354,12 +368,18 @@
     }
 
     document.getElementById('vendorForm').addEventListener('submit', function(e) {
-        const pw = document.getElementById('password').value;
-        const cpw = document.getElementById('confirmPassword').value;
+        const pwInput = document.getElementById('password');
+        const cpwInput = document.getElementById('confirmPassword');
+        if (!pwInput || !cpwInput) {
+            return;
+        }
+
+        const pw = pwInput.value;
+        const cpw = cpwInput.value;
         if (pw !== cpw) {
             e.preventDefault();
-            document.getElementById('confirmPassword').classList.add('is-invalid');
-            const fb = document.getElementById('confirmPassword').nextElementSibling;
+            cpwInput.classList.add('is-invalid');
+            const fb = cpwInput.nextElementSibling;
             if (fb) fb.textContent = 'Passwords do not match.';
         }
     });

@@ -288,7 +288,7 @@
                           <a sec:authorize="isAnonymous()"
                               th:href="@{/register/retailer}" class="btn-select business">Continue as Business Owner</a>
                           <a sec:authorize="isAuthenticated() and !hasAnyAuthority('ROLE_PLATFORM_ADMIN','ROLE_RETAILER','ROLE_VENDOR','ROLE_INVESTOR')"
-                              th:href="@{/register/retailer/google}" class="btn-select business">Continue with Google as Business Owner</a>
+                              th:href="@{/register/retailer/google}" class="btn-select business">Continue as Business Owner</a>
                 </div>
             </div>
 
@@ -310,7 +310,7 @@
                           <a sec:authorize="isAnonymous()"
                               th:href="@{/register/vendor}" class="btn-select supplier">Continue as Supplier</a>
                           <a sec:authorize="isAuthenticated() and !hasAnyAuthority('ROLE_PLATFORM_ADMIN','ROLE_RETAILER','ROLE_VENDOR','ROLE_INVESTOR')"
-                              th:href="@{/register/vendor/google}" class="btn-select supplier">Continue with Google as Supplier</a>
+                              th:href="@{/register/vendor/google}" class="btn-select supplier">Continue as Supplier</a>
                 </div>
             </div>
 
@@ -332,7 +332,7 @@
                           <a sec:authorize="isAnonymous()"
                               th:href="@{/register/investor}" class="btn-select finance">Continue as Investment Partner</a>
                           <a sec:authorize="isAuthenticated() and !hasAnyAuthority('ROLE_PLATFORM_ADMIN','ROLE_RETAILER','ROLE_VENDOR','ROLE_INVESTOR')"
-                              th:href="@{/register/investor/google}" class="btn-select finance">Continue with Google as Investment Partner</a>
+                              th:href="@{/register/investor/google}" class="btn-select finance">Continue as Investment Partner</a>
                 </div>
             </div>
         </div>

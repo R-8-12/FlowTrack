@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -73,7 +73,7 @@
     </div>
 
     <div class="text-center mb-3">
-        <a th:href="@{/oauth2/authorization/google}" class="btn btn-light btn-sm px-3">
+        <a th:href="@{/register/investor/google-start}" class="btn btn-light btn-sm px-3">
             <i class="fab fa-google me-1"></i> Continue with Google
         </a>
     </div>
@@ -87,6 +87,11 @@
         <div class="card-body p-4">
 
             <form th:action="@{/register/investor}" th:object="${investorDto}" method="post" novalidate>
+                <input type="hidden" name="googleSignup" th:value="${googleSignup}">
+
+                <div th:if="${googleSignup}" class="alert alert-info">
+                    Signed in with Google. Complete the required investor details to finish account setup.
+                </div>
 
                 <!-- Validation errors summary -->
                 <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
@@ -97,33 +102,41 @@
                 <!-- ── Account Credentials ── -->
                 <p class="section-title"><i class="fas fa-user-circle me-1"></i> Account Credentials</p>
                 <div class="row g-3">
-                    <div class="col-md-6">
+                    <div class="col-md-6" th:if="${!googleSignup}">
                         <label class="form-label fw-500">Username <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" th:field="*{username}"
                                th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
                                placeholder="e.g. rajesh_ventures" autofocus>
                         <div class="invalid-feedback" th:errors="*{username}"></div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6" th:if="${!googleSignup}">
                         <label class="form-label fw-500">Email Address <span class="text-danger">*</span></label>
                         <input type="email" class="form-control" th:field="*{email}"
                                th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
                                placeholder="rajesh@ventures.in">
                         <div class="invalid-feedback" th:errors="*{email}"></div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6" th:if="${!googleSignup}">
                         <label class="form-label fw-500">Password <span class="text-danger">*</span></label>
                         <input type="password" class="form-control" th:field="*{password}"
                                th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
                                id="password" placeholder="Min 8 characters">
                         <div class="invalid-feedback" th:errors="*{password}"></div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6" th:if="${!googleSignup}">
                         <label class="form-label fw-500">Confirm Password <span class="text-danger">*</span></label>
                         <input type="password" class="form-control" th:field="*{confirmPassword}"
                                th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'"
                                placeholder="Repeat password">
                         <div class="invalid-feedback" th:errors="*{confirmPassword}"></div>
+                    </div>
+                    <div class="col-12" th:if="${googleSignup}">
+                        <label class="form-label fw-500" for="googleEmailPreview">Email Address</label>
+                        <input type="email" id="googleEmailPreview" class="form-control" th:value="*{email}" readonly>
+                        <input type="hidden" name="username" th:value="*{username}">
+                        <input type="hidden" name="email" th:value="*{email}">
+                        <input type="hidden" name="password" th:value="*{password}">
+                        <input type="hidden" name="confirmPassword" th:value="*{confirmPassword}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-500">First Name <span class="text-danger">*</span></label>
@@ -154,6 +167,7 @@
                     <div class="col-md-6">
                         <label class="form-label fw-500">Investor Type <span class="text-danger">*</span></label>
                         <select class="form-select" th:field="*{investorType}"
+                            title="Investor Type"
                                 th:classappend="${#fields.hasErrors('investorType')} ? 'is-invalid'">
                             <option value="">Select type</option>
                             <option value="ANGEL">Angel Investor</option>

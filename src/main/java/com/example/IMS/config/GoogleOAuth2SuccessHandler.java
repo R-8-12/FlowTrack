@@ -29,6 +29,7 @@ import java.io.IOException;
 public class GoogleOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GoogleOAuth2SuccessHandler.class);
+    public static final String PENDING_ROLE_SESSION_KEY = "GOOGLE_PENDING_ROLE";
 
     @Autowired
     private IUserRepository userRepository;
@@ -61,10 +62,35 @@ public class GoogleOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 SecurityContextHolder.getContext());
 
+        String pendingRole = null;
+        Object pendingRoleAttribute = session.getAttribute(PENDING_ROLE_SESSION_KEY);
+        if (pendingRoleAttribute instanceof String) {
+            pendingRole = (String) pendingRoleAttribute;
+        }
+        session.removeAttribute(PENDING_ROLE_SESSION_KEY);
+
         // Role-based redirect (mirrors form-login successHandler in SecurityConfig)
-        String redirectUrl = determineRedirectUrl(user);
+        String redirectUrl;
+        if ((user.getRoles() == null || user.getRoles().isEmpty()) && pendingRole != null) {
+            redirectUrl = resolveGoogleSignupFormUrl(pendingRole);
+        } else {
+            redirectUrl = determineRedirectUrl(user);
+        }
         logger.info("OAuth2 login success for {} → redirecting to {}", email, redirectUrl);
         response.sendRedirect(redirectUrl);
+    }
+
+    private String resolveGoogleSignupFormUrl(String roleName) {
+        switch (roleName) {
+            case "ROLE_RETAILER":
+                return "/register/retailer?googleSignup=true";
+            case "ROLE_VENDOR":
+                return "/register/vendor?googleSignup=true";
+            case "ROLE_INVESTOR":
+                return "/register/investor?googleSignup=true";
+            default:
+                return "/get-started";
+        }
     }
 
     private String determineRedirectUrl(User user) {
