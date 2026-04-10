@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -217,6 +217,22 @@
             margin-right: 0.5rem;
         }
 
+        .google-linked-alert {
+            border-radius: 12px;
+            border: none;
+        }
+
+        .help-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .help-link {
+            color: #fbbf24;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .header-section h1 {
                 font-size: 1.8rem;
@@ -240,6 +256,12 @@
     </a>
 
     <div class="container-wrapper">
+        <div sec:authorize="isAuthenticated() and !hasAnyAuthority('ROLE_PLATFORM_ADMIN','ROLE_RETAILER','ROLE_VENDOR','ROLE_INVESTOR')"
+             class="alert alert-light mb-4 google-linked-alert" role="alert">
+            <i class="fas fa-check-circle text-success"></i>
+            Signed in with Google. Choose a role to continue onboarding.
+        </div>
+
         <!-- Header Section -->
         <div class="header-section" data-aos="fade-down">
             <h1>What Best Describes You?</h1>
@@ -250,7 +272,7 @@
         <div class="row g-4">
             <!-- Business Owner Card -->
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="role-card business" onclick="window.location.href='/register/retailer'">
+                <div class="role-card business">
                     <div class="role-icon">
                         <i class="fas fa-store"></i>
                     </div>
@@ -263,13 +285,16 @@
                         <li><i class="fas fa-check-circle"></i> Sales analytics & insights</li>
                         <li><i class="fas fa-check-circle"></i> Access to funding opportunities</li>
                     </ul>
-                    <a th:href="@{/register/retailer}" class="btn-select business">Continue as Business Owner</a>
+                          <a sec:authorize="isAnonymous()"
+                              th:href="@{/register/retailer}" class="btn-select business">Continue as Business Owner</a>
+                          <a sec:authorize="isAuthenticated() and !hasAnyAuthority('ROLE_PLATFORM_ADMIN','ROLE_RETAILER','ROLE_VENDOR','ROLE_INVESTOR')"
+                              th:href="@{/register/retailer/google}" class="btn-select business">Continue with Google as Business Owner</a>
                 </div>
             </div>
 
             <!-- Supplier Card -->
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="role-card supplier" onclick="window.location.href='/register/vendor'">
+                <div class="role-card supplier">
                     <div class="role-icon">
                         <i class="fas fa-truck-loading"></i>
                     </div>
@@ -282,13 +307,16 @@
                         <li><i class="fas fa-check-circle"></i> Customer network expansion</li>
                         <li><i class="fas fa-check-circle"></i> Performance analytics</li>
                     </ul>
-                    <a th:href="@{/register/vendor}" class="btn-select supplier">Continue as Supplier</a>
+                          <a sec:authorize="isAnonymous()"
+                              th:href="@{/register/vendor}" class="btn-select supplier">Continue as Supplier</a>
+                          <a sec:authorize="isAuthenticated() and !hasAnyAuthority('ROLE_PLATFORM_ADMIN','ROLE_RETAILER','ROLE_VENDOR','ROLE_INVESTOR')"
+                              th:href="@{/register/vendor/google}" class="btn-select supplier">Continue with Google as Supplier</a>
                 </div>
             </div>
 
             <!-- Investment Partner Card -->
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="role-card finance" onclick="window.location.href='/register/investor'">
+                <div class="role-card finance">
                     <div class="role-icon">
                         <i class="fas fa-handshake"></i>
                     </div>
@@ -301,16 +329,19 @@
                         <li><i class="fas fa-check-circle"></i> ROI tracking & reporting</li>
                         <li><i class="fas fa-check-circle"></i> Risk assessment analytics</li>
                     </ul>
-                    <a th:href="@{/register/investor}" class="btn-select finance">Continue as Investment Partner</a>
+                          <a sec:authorize="isAnonymous()"
+                              th:href="@{/register/investor}" class="btn-select finance">Continue as Investment Partner</a>
+                          <a sec:authorize="isAuthenticated() and !hasAnyAuthority('ROLE_PLATFORM_ADMIN','ROLE_RETAILER','ROLE_VENDOR','ROLE_INVESTOR')"
+                              th:href="@{/register/investor/google}" class="btn-select finance">Continue with Google as Investment Partner</a>
                 </div>
             </div>
         </div>
 
         <!-- Help Text -->
         <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="400">
-            <p style="color: rgba(255,255,255,0.9); font-size: 1rem;">
+            <p class="help-text">
                 Already have an account? 
-                <a th:href="@{/login}" style="color: #fbbf24; text-decoration: none; font-weight: 600;">Sign in here</a>
+                <a th:href="@{/login}" class="help-link">Sign in here</a>
             </p>
         </div>
     </div>

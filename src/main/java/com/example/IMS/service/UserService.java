@@ -86,6 +86,26 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
+    public User assignRoleToExistingUser(Long userId, String roleName, String firstName, String lastName) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Role role = roleRepository.findByName(roleName)
+                .orElseGet(() -> roleRepository.save(new Role(roleName)));
+
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            user.setFirstName(firstName.trim());
+        }
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            user.setLastName(lastName.trim());
+        }
+
+        user.addRole(role);
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
     public void saveRegistrationHints(Long userId, String businessName, String businessType,
                                        String gstHint, String phone, String address) {
         userRepository.findById(userId).ifPresent(user -> {

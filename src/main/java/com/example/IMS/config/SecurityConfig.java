@@ -105,7 +105,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .rememberMe()
                 .rememberMeParameter("remember-me")
                 .key("flowtrack-secure-remember-me-key-2026")
-                .tokenValiditySeconds(30 * 24 * 60 * 60)  // 30 days
+                .tokenValiditySeconds(30 * 24 * 60 * 60)
                 .userDetailsService(userDetailsService)
             .and()
             .logout()

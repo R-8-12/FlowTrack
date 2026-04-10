@@ -10,6 +10,10 @@ import com.example.IMS.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/register")
@@ -29,6 +34,21 @@ public class RegistrationController {
 
     @Autowired
     private EmailService emailService;
+
+    @GetMapping("/retailer/google")
+    public String selectRetailerRoleViaGoogle(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        return bindGoogleUserRole("ROLE_RETAILER", "/retailer/dashboard", request, redirectAttributes);
+    }
+
+    @GetMapping("/vendor/google")
+    public String selectVendorRoleViaGoogle(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        return bindGoogleUserRole("ROLE_VENDOR", "/vendor/dashboard", request, redirectAttributes);
+    }
+
+    @GetMapping("/investor/google")
+    public String selectInvestorRoleViaGoogle(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        return bindGoogleUserRole("ROLE_INVESTOR", "/investor/dashboard", request, redirectAttributes);
+    }
     
     // Retailer Registration
     @GetMapping("/retailer")
@@ -201,5 +221,75 @@ public class RegistrationController {
             result.rejectValue("email", "error.investorDto", e.getMessage());
             return "auth/register-investor";
         }
+    }
+
+    private String bindGoogleUserRole(String roleName,
+                                      String successRedirect,
+                                      HttpServletRequest request,
+                                      RedirectAttributes redirectAttributes) {
+        User currentUser = getAuthenticatedUser();
+
+        if (currentUser == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Please sign in with Google first.");
+            return "redirect:/login";
+        }
+
+        if (currentUser.getRoles() != null && !currentUser.getRoles().isEmpty()) {
+            return "redirect:" + resolveDashboardByRole(currentUser);
+        }
+
+        try {
+            User updatedUser = userService.assignRoleToExistingUser(
+                    currentUser.getId(), roleName, currentUser.getFirstName(), currentUser.getLastName());
+
+            refreshAuthentication(updatedUser, request);
+            redirectAttributes.addFlashAttribute("successMessage", "Google account linked successfully.");
+            return "redirect:" + successRedirect;
+        } catch (Exception ex) {
+            logger.error("Failed to bind Google user {} to role {}", currentUser.getEmail(), roleName, ex);
+            redirectAttributes.addFlashAttribute("errorMessage", "Unable to complete role setup. Please try again.");
+            return "redirect:/get-started";
+        }
+    }
+
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof User)) {
+            return null;
+        }
+        return (User) principal;
+    }
+
+    private void refreshAuthentication(User user, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken newAuth =
+                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+        request.getSession(true).setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext());
+    }
+
+    private String resolveDashboardByRole(User user) {
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            return "/get-started";
+        }
+        return user.getRoles().stream()
+                .map(role -> role.getName())
+                .filter(name -> name != null)
+                .findFirst()
+                .map(roleName -> {
+                    switch (roleName) {
+                        case "ROLE_PLATFORM_ADMIN": return "/admin/dashboard";
+                        case "ROLE_RETAILER": return "/retailer/dashboard";
+                        case "ROLE_VENDOR": return "/vendor/dashboard";
+                        case "ROLE_INVESTOR": return "/investor/dashboard";
+                        default: return "/get-started";
+                    }
+                })
+                .orElse("/get-started");
     }
 }

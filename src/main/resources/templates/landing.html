@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,11 +51,32 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#contact">Contact Us</a>
                     </li>
-                    <li class="nav-item ms-lg-3">
+                    <li class="nav-item ms-lg-3" sec:authorize="isAnonymous()">
                         <a class="btn btn-outline-primary" th:href="@{/login}">Login</a>
                     </li>
-                    <li class="nav-item ms-2">
+                    <li class="nav-item ms-2" sec:authorize="isAnonymous()">
                         <a class="btn btn-primary" href="#get-started">Get Started</a>
+                    </li>
+
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and hasAuthority('ROLE_PLATFORM_ADMIN')">
+                        <a class="btn btn-primary" th:href="@{/admin/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and hasAuthority('ROLE_RETAILER')">
+                        <a class="btn btn-primary" th:href="@{/retailer/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and hasAuthority('ROLE_VENDOR')">
+                        <a class="btn btn-primary" th:href="@{/vendor/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and hasAuthority('ROLE_INVESTOR')">
+                        <a class="btn btn-primary" th:href="@{/investor/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and !hasAnyAuthority('ROLE_PLATFORM_ADMIN','ROLE_RETAILER','ROLE_VENDOR','ROLE_INVESTOR')">
+                        <a class="btn btn-primary" th:href="@{/get-started}">Complete Role Setup</a>
+                    </li>
+                    <li class="nav-item ms-2" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-primary">Logout</button>
+                        </form>
                     </li>
                 </ul>
             </div>
