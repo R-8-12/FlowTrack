@@ -11,6 +11,7 @@
     <style>
         body { margin: 0; font-family: "Inter", sans-serif; background: #f1f5f9; }
         .sidebar { width: 260px; min-height: 100vh; background: linear-gradient(180deg, #0f172a, #1e293b); position: fixed; left: 0; top: 0; color: #fff; overflow-y: auto; }
+        .sidebar.vendor { background: linear-gradient(180deg, #1a365d, #2a4a7f); }
         .brand { padding: 1.35rem 1.4rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .brand h4 { margin: 0; font-size: 1.08rem; font-weight: 800; }
         .brand small { opacity: 0.55; }
@@ -36,21 +37,47 @@
 </head>
 <body>
 
-<aside class="sidebar">
-    <div class="brand">
+<aside class="sidebar" th:classappend="${isVendor} ? ' vendor' : ''">
+    <div class="brand" th:if="${isRetailer}">
         <h4><i class="fas fa-warehouse me-2"></i>FlowTrack</h4>
         <small>Retailer Portal</small>
     </div>
-    <div class="section">Main</div>
-    <a href="/retailer/dashboard"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="/business-profile/status" class="active"><i class="fas fa-building"></i> Business Profile</a>
-    <div class="section">Finance</div>
-    <a th:href="${hasProfile ? '/business-profile/bank?profileId=' + profiles[0].id : '/business-profile/create'}"><i class="fas fa-university"></i> Bank Details</a>
-    <a th:href="${hasProfile ? '/business-profile/subscription?profileId=' + profiles[0].id : '/business-profile/create'}"><i class="fas fa-crown"></i> Subscription</a>
-    <div class="section">Reports</div>
-    <a href="/reports"><i class="fas fa-chart-bar"></i> Reports</a>
-    <div class="section">Account</div>
-    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+    <div class="brand" th:if="${isVendor}">
+        <h4><i class="fas fa-warehouse me-2"></i>FlowTrack</h4>
+        <small>Vendor Portal</small>
+    </div>
+
+    <div th:if="${isRetailer}">
+        <div class="section">Main</div>
+        <a href="/retailer/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/business-profile/status" class="active"><i class="fas fa-building"></i> Business Profile</a>
+        <div class="section">Inventory</div>
+        <a href="/retailer/inventory/add"><i class="fas fa-plus-circle"></i> Add Item</a>
+        <a href="/retailer/inventory"><i class="fas fa-boxes"></i> View Inventory</a>
+        <a href="/vendors"><i class="fas fa-truck"></i> My Suppliers</a>
+        <div class="section">Finance</div>
+        <a th:href="${hasProfile ? '/business-profile/bank?profileId=' + profiles[0].id : '/business-profile/create'}"><i class="fas fa-university"></i> Bank Details</a>
+        <a th:href="${hasProfile ? '/business-profile/subscription?profileId=' + profiles[0].id : '/business-profile/create'}"><i class="fas fa-crown"></i> Subscription</a>
+        <div class="section">Reports</div>
+        <a href="/reports"><i class="fas fa-chart-bar"></i> Reports</a>
+        <div class="section">Account</div>
+        <a href="/onboarding/required"><i class="fas fa-tasks"></i> Onboarding</a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+    </div>
+
+    <div th:if="${isVendor}">
+        <div class="section">Main</div>
+        <a href="/vendor/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/business-profile/status" class="active"><i class="fas fa-building"></i> Business Profile</a>
+        <div class="section">Catalog</div>
+        <a href="/products"><i class="fas fa-box-open"></i> Product Catalog</a>
+        <a href="/orders"><i class="fas fa-shopping-cart"></i> Orders</a>
+        <div class="section">Network</div>
+        <a href="/vendor/retailers"><i class="fas fa-store"></i> Retailer Network</a>
+        <div class="section">Account</div>
+        <a href="/onboarding/required"><i class="fas fa-tasks"></i> Onboarding</a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+    </div>
 </aside>
 
 <main class="main">
