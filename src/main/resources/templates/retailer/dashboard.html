@@ -31,6 +31,43 @@
         .main-content { margin-left:260px; min-height:100vh; }
         .topbar { background:#fff; border-bottom:1px solid #e2e8f0; padding:0.875rem 2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
         .topbar h5 { margin:0; font-weight:700; color:#0f172a; font-size:1rem; }
+        
+        /* Professional Subscription Badge Styles */
+        .subscription-badge {
+            display:inline-flex;
+            align-items:center;
+            gap:0.5rem;
+            padding:0.5rem 1rem;
+            border-radius:10px;
+            font-size:0.8rem;
+            font-weight:600;
+            transition:all 0.2s ease;
+            cursor:default;
+        }
+        .subscription-badge.active {
+            background:linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border:1px solid #fbbf24;
+            color:#92400e;
+        }
+        .subscription-badge.active i {
+            color:#f59e0b;
+        }
+        .subscription-badge.inactive {
+            background:#fff1f2;
+            border:1px solid #fecdd3;
+            color:#881337;
+            cursor:pointer;
+        }
+        .subscription-badge.inactive:hover {
+            background:#ffe4e6;
+            border-color:#fda4af;
+            transform:translateY(-1px);
+            box-shadow:0 2px 8px rgba(244,63,94,0.15);
+        }
+        .subscription-badge.inactive i:first-child {
+            color:#f43f5e;
+        }
+        
         .page-body { padding:1.75rem 2rem; }
         .info-banner { border-radius:14px; padding:1.1rem 1.4rem; display:flex; align-items:flex-start; gap:1rem; }
         .info-banner.setup   { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid #3b82f6; }
@@ -117,11 +154,24 @@
             <h5>Dashboard</h5>
             <div class="text-muted" style="font-size:0.8rem;">Welcome back, <strong th:text="${user.firstName != null ? user.firstName : user.username}">User</strong></div>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            <span th:if="${hasSubscription}" class="badge text-bg-success" th:text="${subscriptionPlan + ' Plan'}">PLAN</span>
-            <span th:unless="${hasSubscription}" class="badge text-bg-warning text-dark">No Subscription</span>
-            <span class="badge text-bg-primary">RETAILER</span>
-            <a th:href="@{/logout}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-sign-out-alt"></i></a>
+        <div class="d-flex align-items-center gap-3">
+            <!-- Active Subscription Badge -->
+            <div th:if="${hasSubscription}" class="subscription-badge active">
+                <i class="fas fa-crown" style="font-size:0.75rem;"></i>
+                <span th:text="${subscriptionPlan + ' Plan'}">Premium Plan</span>
+            </div>
+            <!-- No Subscription Badge with Upgrade Action -->
+            <a th:unless="${hasSubscription}" 
+               th:href="${hasProfile ? '/business-profile/subscription?profileId=' + primaryProfile?.id : '/business-profile/create'}"
+               class="subscription-badge inactive" style="text-decoration:none;">
+                <i class="fas fa-exclamation-circle" style="font-size:0.75rem;"></i>
+                <span>No Active Subscription</span>
+                <i class="fas fa-arrow-right" style="font-size:0.65rem;margin-left:0.35rem;opacity:0.7;"></i>
+            </a>
+            <!-- Logout Button -->
+            <a th:href="@{/logout}" class="btn btn-outline-secondary btn-sm" style="border-radius:8px;padding:0.4rem 0.9rem;">
+                <i class="fas fa-sign-out-alt" style="font-size:0.85rem;"></i>
+            </a>
         </div>
     </div>
 
@@ -216,54 +266,54 @@
             </div>
         </div>
 
-        <!-- Analytics Row -->
-        <div class="row g-4 mb-4">
-            <div class="col-lg-7">
-                <div class="analytics-card h-100">
+        <!-- Analytics Row - 4 Line Charts -->
+        <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+                <div class="analytics-card">
                     <div class="d-flex align-items-start justify-content-between mb-3">
                         <div>
-                            <h6>Stock Value Distribution</h6>
-                            <small>Top 5 items by inventory value (qty × unit price)</small>
+                            <h6><i class="fas fa-boxes me-2" style="color:#6366f1;"></i>Total Stock</h6>
+                            <small>Inventory levels over last 30 days</small>
                         </div>
                         <span class="badge text-bg-light border" style="font-size:0.7rem;">Live</span>
                     </div>
-                    <canvas id="stockChart" height="195"></canvas>
-                    <div th:if="${stats.stockDistribution.isEmpty()}" class="text-center text-muted py-4">
-                        <i class="fas fa-box-open fa-2x mb-2 d-block" style="opacity:0.3;"></i>
-                        No inventory data yet.
-                        <a href="/retailer/inventory/add" class="d-block mt-2 btn btn-sm btn-outline-primary">Add first item</a>
-                    </div>
+                    <canvas id="totalStockChart" height="180"></canvas>
                 </div>
             </div>
-            <div class="col-lg-5">
-                <div class="analytics-card h-100">
-                    <div class="mb-3">
-                        <h6>Top Items by Value</h6>
-                        <small>Highest-value SKUs in your inventory</small>
+            <div class="col-lg-6">
+                <div class="analytics-card">
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div>
+                            <h6><i class="fas fa-arrow-up me-2" style="color:#22c55e;"></i>Items Issued</h6>
+                            <small>Items issued to borrowers by date</small>
+                        </div>
+                        <span class="badge text-bg-light border" style="font-size:0.7rem;">Live</span>
                     </div>
-                    <div th:if="${stats.topItems.empty}" class="text-center text-muted py-4">No items found.</div>
-                    <div th:unless="${stats.topItems.empty}">
-                        <div th:each="entry,iter : ${stats.topItems}" class="item-row">
-                            <div class="item-rank" th:text="${iter.index + 1}">1</div>
-                            <div class="item-name" th:text="${entry.name}">Item</div>
-                            <div class="item-qty" th:text="${entry.quantity + ' units'}">0 units</div>
-                            <div class="item-val" th:text="${'&#8377;' + #numbers.formatDecimal(entry.totalValue,1,'COMMA',0,'POINT')}">&#8377;0</div>
+                    <canvas id="itemsIssuedChart" height="180"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="analytics-card">
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div>
+                            <h6><i class="fas fa-arrow-down me-2" style="color:#3b82f6;"></i>Items Returned</h6>
+                            <small>Items returned by borrowers by date</small>
                         </div>
+                        <span class="badge text-bg-light border" style="font-size:0.7rem;">Live</span>
                     </div>
-                    <div class="mt-3 pt-2 border-top">
-                        <div class="d-flex justify-content-between" style="font-size:0.82rem;">
-                            <span class="text-muted">Total Inventory Value</span>
-                            <strong th:text="${'&#8377;' + #numbers.formatDecimal(stats.stockValue,1,'COMMA',0,'POINT')}">&#8377;0</strong>
+                    <canvas id="itemsReturnedChart" height="180"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="analytics-card">
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div>
+                            <h6><i class="fas fa-shopping-cart me-2" style="color:#f97316;"></i>Items Sold</h6>
+                            <small>Sales transactions by date</small>
                         </div>
-                        <div class="d-flex justify-content-between mt-1" style="font-size:0.82rem;">
-                            <span class="text-muted">Items Issued (All Time)</span>
-                            <strong th:text="${stats.totalIssued}">0</strong>
-                        </div>
-                        <div class="d-flex justify-content-between mt-1" style="font-size:0.82rem;">
-                            <span class="text-muted">Fine Collected</span>
-                            <strong th:text="${'&#8377;' + #numbers.formatDecimal(stats.fineCollected,1,'COMMA',2,'POINT')}">&#8377;0.00</strong>
-                        </div>
+                        <span class="badge text-bg-light border" style="font-size:0.7rem;">Live</span>
                     </div>
+                    <canvas id="itemsSoldChart" height="180"></canvas>
                 </div>
             </div>
         </div>
@@ -352,38 +402,186 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/chatbot.js"></script>
-<script th:inline="javascript">
-/*<![CDATA[*/
-const stockDistribution = /*[[${stats.stockDistribution}]]*/ {};
-if (Object.keys(stockDistribution).length > 0) {
-    const ctx = document.getElementById("stockChart");
-    if (ctx) {
-        new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: Object.keys(stockDistribution),
-                datasets: [{
-                    label: "Stock Value",
-                    data: Object.values(stockDistribution),
-                    backgroundColor: ["#6366f1","#22c55e","#f97316","#f43f5e","#a855f7"],
-                    borderRadius: 8, borderSkipped: false
-                }]
+<script>
+// Fetch chart data from API and render all 4 line charts
+fetch('/api/retailer/chart-data')
+    .then(response => response.json())
+    .then(data => {
+        // Common chart configuration
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: true,
+            interaction: {
+                mode: 'index',
+                intersect: false
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { callbacks: { label: c => "\u20B9" + c.parsed.y.toLocaleString("en-IN") } }
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    padding: 12,
+                    titleFont: { size: 13, weight: '600' },
+                    bodyFont: { size: 12 },
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1,
+                    displayColors: false,
+                    callbacks: {
+                        title: (items) => items[0].label,
+                        label: (context) => {
+                            const label = context.dataset.label || '';
+                            const value = context.parsed.y;
+                            return label + ': ' + value + (label.includes('Stock') ? ' units' : ' items');
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 10 },
+                        color: '#94a3b8',
+                        precision: 0
+                    },
+                    grid: {
+                        color: '#f1f5f9',
+                        drawBorder: false
+                    }
                 },
-                scales: {
-                    y: { beginAtZero: true, ticks: { callback: v => "\u20B9" + Number(v).toLocaleString("en-IN"), font: {size:11} }, grid: { color:"#f1f5f9" } },
-                    x: { grid: { display: false }, ticks: { font: {size:11} } }
+                x: {
+                    ticks: {
+                        font: { size: 9 },
+                        color: '#94a3b8',
+                        maxRotation: 45,
+                        minRotation: 45
+                    },
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    }
                 }
             }
-        });
-    }
-}
-/*]]>*/
+        };
+
+        // 1. Total Stock Chart (Purple/Indigo)
+        const totalStockCtx = document.getElementById('totalStockChart');
+        if (totalStockCtx) {
+            new Chart(totalStockCtx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Total Stock',
+                        data: data.totalStock,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#6366f1',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: '#6366f1',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 3
+                    }]
+                },
+                options: commonOptions
+            });
+        }
+
+        // 2. Items Issued Chart (Green)
+        const itemsIssuedCtx = document.getElementById('itemsIssuedChart');
+        if (itemsIssuedCtx) {
+            new Chart(itemsIssuedCtx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Items Issued',
+                        data: data.itemsIssued,
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#22c55e',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: '#22c55e',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 3
+                    }]
+                },
+                options: commonOptions
+            });
+        }
+
+        // 3. Items Returned Chart (Blue)
+        const itemsReturnedCtx = document.getElementById('itemsReturnedChart');
+        if (itemsReturnedCtx) {
+            new Chart(itemsReturnedCtx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Items Returned',
+                        data: data.itemsReturned,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: '#3b82f6',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 3
+                    }]
+                },
+                options: commonOptions
+            });
+        }
+
+        // 4. Items Sold Chart (Orange)
+        const itemsSoldCtx = document.getElementById('itemsSoldChart');
+        if (itemsSoldCtx) {
+            new Chart(itemsSoldCtx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Items Sold',
+                        data: data.itemsSold,
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#f97316',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: '#f97316',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 3
+                    }]
+                },
+                options: commonOptions
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching chart data:', error);
+    });
 </script>
 </body>
 </html>
