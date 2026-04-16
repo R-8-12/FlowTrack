@@ -46,7 +46,7 @@ public class GoogleOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
             logger.error("OAuth2 success handler: no domain User found for email {}", email);
-            response.sendRedirect("/login?error=oauth2");
+            response.sendRedirect("/login?oauth2Error=true");
             return;
         }
 
