@@ -104,6 +104,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .rememberMe()
                 .rememberMeParameter("remember-me")
+                .alwaysRemember(true)
                 .key("flowtrack-secure-remember-me-key-2026")
                 .tokenValiditySeconds(30 * 24 * 60 * 60)
                 .userDetailsService(userDetailsService)
