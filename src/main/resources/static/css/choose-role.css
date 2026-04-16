@@ -1,0 +1,229 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.choose-role-body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.container-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #fff;
+}
+
+.header-section h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.header-section p {
+    font-size: 1.2rem;
+    opacity: 0.95;
+}
+
+.role-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.role-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.role-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+}
+
+.role-card:hover::before {
+    transform: scaleX(1);
+}
+
+.role-icon {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.role-card:hover .role-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.role-icon i {
+    font-size: 3.5rem;
+    color: #fff;
+}
+
+.role-card.business .role-icon {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+}
+
+.role-card.supplier .role-icon {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.role-card.finance .role-icon {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+.role-card h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #2d3748;
+}
+
+.role-card .subtitle {
+    font-size: 0.95rem;
+    color: #718096;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.role-card p {
+    color: #4a5568;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.role-card ul {
+    text-align: left;
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.role-card ul li {
+    padding: 0.6rem 0;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.role-card ul li i {
+    color: #48bb78;
+    margin-right: 0.75rem;
+    font-size: 1rem;
+}
+
+.btn-select {
+    padding: 0.9rem 2.5rem;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-select.business {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+}
+
+.btn-select.supplier {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.btn-select.finance {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+.btn-select:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    color: #fff;
+}
+
+.back-link {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    color: #fbbf24;
+    transform: translateX(-5px);
+}
+
+.back-link i {
+    margin-right: 0.5rem;
+}
+
+.google-linked-alert {
+    border-radius: 12px;
+    border: none;
+}
+
+.help-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+}
+
+.help-link {
+    color: #fbbf24;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .header-section h1 {
+        font-size: 1.8rem;
+    }
+
+    .role-icon {
+        width: 100px;
+        height: 100px;
+    }
+
+    .role-icon i {
+        font-size: 2.5rem;
+    }
+}

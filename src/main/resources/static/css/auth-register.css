@@ -1,0 +1,341 @@
+/* Shared registration theming for auth and role-specific signup pages */
+.auth-register-body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 30px 0;
+}
+
+.auth-register-body.theme-default {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-register-body.theme-retailer {
+    background: linear-gradient(135deg, #1a6b3c 0%, #2e9e5c 50%, #1a6b3c 100%);
+}
+
+.auth-register-body.theme-vendor {
+    background: linear-gradient(135deg, #1a4a8b 0%, #2563eb 50%, #1a4a8b 100%);
+}
+
+.auth-register-body.theme-investor {
+    background: linear-gradient(135deg, #f6ad55 0%, #ed8936 50%, #dd6b20 100%);
+    padding: 2rem 0;
+}
+
+.register-container {
+    margin: 0 auto;
+}
+
+.auth-register-body.theme-default .register-container {
+    max-width: 600px;
+}
+
+.auth-register-body.theme-retailer .register-container {
+    max-width: 700px;
+}
+
+.auth-register-body.theme-vendor .register-container {
+    max-width: 740px;
+}
+
+.register-container-sm {
+    max-width: 640px;
+}
+
+.auth-register-body .auth-card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+}
+
+.auth-register-body .auth-card-sm {
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.auth-register-body .auth-card-header {
+    color: #fff;
+    border-radius: 18px 18px 0 0 !important;
+    padding: 32px 36px;
+}
+
+.auth-register-body .auth-card-header-sm {
+    border-radius: 15px 15px 0 0 !important;
+    padding: 30px;
+}
+
+.auth-register-body.theme-default .auth-card-header,
+.auth-register-body.theme-default .btn-register {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-register-body.theme-retailer .auth-card-header,
+.auth-register-body.theme-retailer .btn-register {
+    background: linear-gradient(135deg, #1a6b3c 0%, #2e9e5c 100%);
+}
+
+.auth-register-body.theme-vendor .auth-card-header,
+.auth-register-body.theme-vendor .btn-register {
+    background: linear-gradient(135deg, #1a4a8b 0%, #2563eb 100%);
+}
+
+.auth-register-body .badge-role {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 5px 14px;
+    border-radius: 20px;
+}
+
+.auth-register-body .section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 24px 0 10px;
+    padding-bottom: 6px;
+}
+
+.auth-register-body.theme-retailer .section-title {
+    color: #1a6b3c;
+    border-bottom: 2px solid #e9f7ef;
+}
+
+.auth-register-body.theme-vendor .section-title {
+    color: #1a4a8b;
+    border-bottom: 2px solid #e8f0fe;
+}
+
+.auth-register-body .section-title-alt {
+    color: #1a4a8b;
+    border-color: #dbeafe;
+}
+
+.auth-register-body .section-note {
+    font-size: 0.75rem;
+}
+
+.auth-register-body .step-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-right: 8px;
+}
+
+.auth-register-body.theme-retailer .step-badge {
+    background: #e9f7ef;
+    color: #1a6b3c;
+}
+
+.auth-register-body.theme-vendor .step-badge {
+    background: #e8f0fe;
+    color: #1a4a8b;
+}
+
+.auth-register-body .step-badge-alt {
+    background: #e8f0fe;
+    color: #1a4a8b;
+}
+
+.auth-register-body .form-control,
+.auth-register-body .form-select {
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: border-color 0.2s;
+}
+
+.auth-register-body.theme-retailer .form-control,
+.auth-register-body.theme-retailer .form-select {
+    border: 1px solid #d0e7da;
+}
+
+.auth-register-body.theme-vendor .form-control,
+.auth-register-body.theme-vendor .form-select {
+    border: 1px solid #c7d7f5;
+}
+
+.auth-register-body .form-group label,
+.auth-register-body .form-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: #2d3748;
+    margin-bottom: 4px;
+}
+
+.auth-register-body .badge-optional {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: #718096;
+    background: #edf2f7;
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+}
+
+.auth-register-body .btn-register {
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    color: #fff;
+}
+
+.auth-register-body .btn-register:hover {
+    color: #fff;
+    opacity: 0.92;
+}
+
+.auth-register-body .password-strength {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 6px;
+    background: #e2e8f0;
+}
+
+.auth-register-body .strength-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s;
+}
+
+.auth-register-body .alert-custom {
+    border-radius: 10px;
+    border: none;
+    padding: 14px 18px;
+}
+
+.auth-register-body.theme-retailer .input-group-text {
+    background: #f0faf4;
+    border-color: #d0e7da;
+    color: #1a6b3c;
+}
+
+.auth-register-body.theme-vendor .input-group-text {
+    background: #eff6ff;
+    border-color: #c7d7f5;
+    color: #1a4a8b;
+}
+
+.auth-register-body .bank-info-note {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: #1e40af;
+}
+
+.auth-register-body .brand-wordmark {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.auth-register-body .header-subtitle {
+    opacity: 0.85;
+    font-size: 0.9rem;
+}
+
+.auth-register-body .header-icon-muted {
+    opacity: 0.3;
+}
+
+.auth-register-body .toggle-link-sm {
+    font-size: 0.875rem;
+}
+
+.auth-register-body .terms-text {
+    font-size: 0.85rem;
+}
+
+.auth-register-body .auth-footnote {
+    font-size: 0.875rem;
+}
+
+.auth-register-body .post-register-hint {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.auth-register-body .fw-500 {
+    font-weight: 500;
+}
+
+.auth-register-body .fw-600 {
+    font-weight: 600;
+}
+
+.auth-register-body .register-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.auth-register-body .card-header-custom {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+    color: #fff;
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+
+.auth-register-body .card-header-custom h2 {
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.auth-register-body .card-header-custom p {
+    opacity: 0.9;
+    margin: 0;
+}
+
+.auth-register-body.theme-investor .section-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ed8936;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 1.5rem 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid #fed7aa;
+}
+
+.auth-register-body.theme-investor .btn-register {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+    border-radius: 50px;
+    padding: 0.85rem;
+}
+
+.auth-register-body.theme-investor .btn-register:hover {
+    background: linear-gradient(135deg, #dd6b20 0%, #c05621 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(237, 137, 54, 0.4);
+    opacity: 1;
+}
+
+.auth-register-body .collapse-toggle {
+    color: #ed8936;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.auth-register-body .collapse-toggle:hover {
+    text-decoration: underline;
+}
+
+.auth-register-body .investor-footer {
+    font-size: 0.9rem;
+}
+
+.auth-register-body .investor-signin-link {
+    color: #ed8936;
+}
