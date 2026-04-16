@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-<div th:replace="header :: myHeader"></div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Dashboard</title>
+    <th:block th:replace="header :: myHeader"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-common.css}">
 </head>
 <body class="sb-nav-fixed">
     <div th:replace="navbar :: myNavbar"></div>
@@ -80,8 +84,8 @@
                                 <div class="card-body">
                                     <h5 th:text="${#numbers.formatDecimal(metrics.conversionRate, 0, 1)} + '%'">0%</h5>
                                     <small class="text-muted">Users with at least one business profile</small>
-                                    <div class="progress mt-2" style="height: 8px;">
-                                        <div class="progress-bar bg-primary" role="progressbar"
+                                    <div class="progress mt-2 progress-thin">
+                                        <div class="progress-bar bg-primary" role="progressbar" aria-label="Profile conversion rate" title="Profile conversion rate"
                                              th:style="'width:' + ${metrics.conversionRate} + '%'"></div>
                                     </div>
                                 </div>
@@ -93,8 +97,8 @@
                                 <div class="card-body">
                                     <h5 th:text="${#numbers.formatDecimal(metrics.activationRate, 0, 1)} + '%'">0%</h5>
                                     <small class="text-muted">Users with an ACTIVE business profile</small>
-                                    <div class="progress mt-2" style="height: 8px;">
-                                        <div class="progress-bar bg-success" role="progressbar"
+                                    <div class="progress mt-2 progress-thin">
+                                        <div class="progress-bar bg-success" role="progressbar" aria-label="Activation rate" title="Activation rate"
                                              th:style="'width:' + ${metrics.activationRate} + '%'"></div>
                                     </div>
                                 </div>
