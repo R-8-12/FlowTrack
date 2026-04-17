@@ -44,7 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
+            .csrf()
+                .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .and()
             .authorizeRequests()
                 // Public resources
                 .antMatchers("/css/**", "/js/**", "/images/**", "/api/chatbot/**").permitAll()
@@ -61,6 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**", "/platform/**").hasAuthority("ROLE_PLATFORM_ADMIN")
                 
                 // Retailer Routes
+                .antMatchers("/api/retailer/vendors/**").hasAuthority("ROLE_RETAILER")
+                .antMatchers("/retailer/vendor-search").hasAuthority("ROLE_RETAILER")
                 .antMatchers("/retailer/**", "/inventory/**", "/transactions/**").hasAuthority("ROLE_RETAILER")
                 
                 // Vendor Routes

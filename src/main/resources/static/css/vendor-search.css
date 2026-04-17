@@ -1,0 +1,357 @@
+/* Vendor Search Custom Styles */
+/* Task 13: Create custom CSS styling */
+/* Requirements: 16.1-16.7, 17.1-17.11 */
+
+/* ============================================================================
+   Base Styles
+   ============================================================================ */
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* ============================================================================
+   Vendor Card Styles
+   Requirements: 17.1-17.11
+   ============================================================================ */
+
+.vendor-card {
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+}
+
+/* Vendor card hover effect - transform translateY and box-shadow transition */
+.vendor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.vendor-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 1rem;
+}
+
+/* Vendor details paragraph styling */
+.vendor-details p {
+    font-size: 0.9rem;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.vendor-details strong {
+    font-weight: 600;
+    color: #212529;
+}
+
+.vendor-details .text-primary {
+    font-weight: 700;
+}
+
+/* ============================================================================
+   Badge Positioning and Sizing Styles
+   Requirements: 17.8
+   ============================================================================ */
+
+.vendor-card .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Badge positioning - position absolute, top-right corner */
+.vendor-card .badge.position-absolute {
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 10;
+}
+
+/* Badge color classes */
+.badge.bg-success {
+    background-color: #28a745 !important;
+    color: #ffffff !important;
+}
+
+.badge.bg-primary {
+    background-color: #007bff !important;
+    color: #ffffff !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.badge.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+/* ============================================================================
+   Search Bar Styles
+   Requirements: 16.1
+   ============================================================================ */
+
+#searchQuery {
+    border-left: none;
+    font-size: 1rem;
+    padding: 0.75rem;
+}
+
+/* Search bar focus effect */
+#searchQuery:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #80bdff;
+}
+
+.input-group-text {
+    border-right: none;
+}
+
+/* ============================================================================
+   Filter Sidebar Styles
+   Requirements: 16.2, 18.1-18.7
+   ============================================================================ */
+
+.card-header {
+    font-weight: 600;
+}
+
+.form-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-control-sm,
+.form-select-sm {
+    font-size: 0.875rem;
+}
+
+#clearFilters {
+    margin-top: 0.5rem;
+}
+
+/* ============================================================================
+   Loading Spinner Sizing
+   Requirements: 16.6
+   ============================================================================ */
+
+#loadingIndicator .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+}
+
+#loadingIndicator p {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* ============================================================================
+   Pagination Styling
+   Requirements: 20.1-20.7
+   ============================================================================ */
+
+.pagination {
+    margin-top: 2rem;
+}
+
+.pagination .page-link {
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.75rem;
+    margin: 0 0.125rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    color: #0056b3;
+}
+
+/* Pagination active state */
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 123, 255, 0.3);
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #ffffff;
+    border-color: #dee2e6;
+    opacity: 0.6;
+}
+
+/* ============================================================================
+   Results Count and No Results Styles
+   Requirements: 16.7
+   ============================================================================ */
+
+#resultsCount {
+    font-size: 0.95rem;
+}
+
+#noResults {
+    padding: 3rem 1rem;
+}
+
+#noResults .fa-search {
+    opacity: 0.3;
+}
+
+/* ============================================================================
+   Card Footer Styles
+   Requirements: 17.11
+   ============================================================================ */
+
+.vendor-card .card-footer {
+    padding: 1rem;
+}
+
+.vendor-card .card-footer .btn {
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.vendor-card .card-footer .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   Responsive Media Queries for Mobile
+   Requirements: 16.1-16.7, 17.1-17.11
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    /* Stack filters on top of results on mobile */
+    .col-md-3,
+    .col-md-9 {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Adjust vendor card grid for mobile */
+    #vendorGrid .col {
+        width: 100%;
+    }
+    
+    /* Reduce padding and margins on mobile */
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .vendor-card {
+        margin-bottom: 1rem;
+    }
+    
+    /* Adjust badge positioning for smaller screens */
+    .vendor-card .badge.position-absolute {
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 0.65rem;
+        padding: 0.3rem 0.5rem;
+    }
+    
+    /* Adjust search bar for mobile */
+    #searchQuery {
+        font-size: 0.9rem;
+        padding: 0.6rem;
+    }
+    
+    /* Adjust filter card for mobile */
+    .card-body {
+        padding: 1rem;
+    }
+    
+    /* Adjust pagination for mobile */
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .pagination .page-link {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+        margin: 0.1rem;
+    }
+    
+    /* Adjust vendor details text size */
+    .vendor-details p {
+        font-size: 0.85rem;
+    }
+    
+    /* Adjust card title size */
+    .vendor-card .card-title {
+        font-size: 1rem;
+    }
+    
+    /* Adjust button sizes in card footer */
+    .vendor-card .card-footer .btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    /* Adjust loading spinner size */
+    #loadingIndicator .spinner-border {
+        width: 2rem;
+        height: 2rem;
+        border-width: 0.25rem;
+    }
+    
+    /* Adjust no results icon size */
+    #noResults .fa-search {
+        font-size: 2rem !important;
+    }
+}
+
+/* ============================================================================
+   Additional Utility Styles
+   ============================================================================ */
+
+/* Smooth scrolling for page navigation */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Icon spacing */
+.vendor-details i {
+    margin-right: 0.25rem;
+}
+
+/* Verified icon styling */
+.fa-check-circle {
+    margin-left: 0.25rem;
+}
+
+/* Price highlight */
+.vendor-details .text-primary.fs-5 {
+    font-size: 1.25rem !important;
+}
+
+/* Card body padding adjustment */
+.vendor-card .card-body {
+    padding: 1.25rem;
+}
+
+/* Filter form spacing */
+#filterForm .mb-3:last-of-type {
+    margin-bottom: 1rem !important;
+}
