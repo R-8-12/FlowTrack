@@ -46,6 +46,22 @@ public class RetailerVendorSearchPageController {
     }
     
     /**
+     * Convenience alias: /retailer/vendors -> /retailer/vendor-search
+     */
+    @GetMapping("/vendors")
+    public String vendorsAlias() {
+        return "redirect:/retailer/vendor-search";
+    }
+    
+    /**
+     * Convenience alias: /retailer/suppliers -> /retailer/vendor-search
+     */
+    @GetMapping("/suppliers")
+    public String suppliersAlias() {
+        return "redirect:/retailer/vendor-search";
+    }
+    
+    /**
      * Get current authenticated user from security context.
      * 
      * @return the authenticated User object

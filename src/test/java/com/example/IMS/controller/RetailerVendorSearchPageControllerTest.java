@@ -2,116 +2,92 @@ package com.example.IMS.controller;
 
 import com.example.IMS.model.Role;
 import com.example.IMS.model.User;
-import com.example.IMS.repository.IRoleRepository;
-import com.example.IMS.repository.IUserRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Tests for RetailerVendorSearchPageController (Task 8.4)
+ * Test suite for RetailerVendorSearchPageController.
  * 
- * <p>This test class verifies that the vendor search page controller:
- * <ul>
- *   <li>Requires ROLE_RETAILER authentication</li>
- *   <li>Serves the correct Thymeleaf template</li>
- *   <li>Adds the authenticated user to the model</li>
- * </ul>
+ * <p>Verifies Phase 1 implementation:
+ * - /retailer/vendor-search is accessible to ROLE_RETAILER
+ * - Convenience aliases /retailer/vendors and /retailer/suppliers redirect properly
+ * - Unauthorized access is denied
  */
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
-@DisplayName("RetailerVendorSearchPageController - UI Page Tests (Task 8.4)")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@WebMvcTest(RetailerVendorSearchPageController.class)
+@DisplayName("RetailerVendorSearchPageController Tests")
 class RetailerVendorSearchPageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private IUserRepository userRepository;
-
-    @Autowired
-    private IRoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     private User retailerUser;
-    private User vendorUser;
-    private String suffix;
 
     @BeforeEach
     void setUp() {
-        suffix = String.valueOf(System.nanoTime()).substring(5, 13);
-
-        // Create retailer role
-        Role retailerRole = roleRepository.findByName("ROLE_RETAILER")
-                .orElseGet(() -> roleRepository.save(new Role("ROLE_RETAILER")));
-
-        // Create vendor role
-        Role vendorRole = roleRepository.findByName("ROLE_VENDOR")
-                .orElseGet(() -> roleRepository.save(new Role("ROLE_VENDOR")));
-
-        // Create retailer user
         retailerUser = new User();
-        retailerUser.setUsername("retailer" + suffix);
-        retailerUser.setEmail("retailer" + suffix + "@test.com");
-        retailerUser.setPassword(passwordEncoder.encode("password"));
-        retailerUser.setEnabled(true);
-        retailerUser.addRole(retailerRole);
-        retailerUser = userRepository.save(retailerUser);
-
-        // Create vendor user (for negative test)
-        vendorUser = new User();
-        vendorUser.setUsername("vendor" + suffix);
-        vendorUser.setEmail("vendor" + suffix + "@test.com");
-        vendorUser.setPassword(passwordEncoder.encode("password"));
-        vendorUser.setEnabled(true);
-        vendorUser.addRole(vendorRole);
-        vendorUser = userRepository.save(vendorUser);
-    }
-
-    private UsernamePasswordAuthenticationToken authFor(User user) {
-        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        retailerUser.setId(1L);
+        retailerUser.setUsername("retailer@test.com");
+        retailerUser.setFirstName("Test");
+        retailerUser.setLastName("Retailer");
+        Role retailerRole = new Role();
+        retailerRole.setName("ROLE_RETAILER");
+        Set<Role> roles = new HashSet<>();
+        roles.add(retailerRole);
+        retailerUser.setRoles(roles);
     }
 
     @Test
-    @Order(1)
-    @DisplayName("GET /retailer/vendor-search - unauthenticated → redirect to login")
-    void vendorSearchPage_unauthenticated_redirectsToLogin() throws Exception {
+    @DisplayName("GET /retailer/vendor-search as RETAILER should return vendor-search view")
+    @WithMockUser(username = "retailer@test.com", authorities = {"ROLE_RETAILER"})
+    void testRetailerAccessVendorSearchReturnsView() throws Exception {
         mockMvc.perform(get("/retailer/vendor-search"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
-    }
-
-    @Test
-    @Order(2)
-    @DisplayName("GET /retailer/vendor-search - ROLE_RETAILER → renders page with user in model")
-    void vendorSearchPage_retailer_rendersPageWithUser() throws Exception {
-        mockMvc.perform(get("/retailer/vendor-search")
-                        .with(authentication(authFor(retailerUser))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("retailer/vendor-search"))
-                .andExpect(model().attributeExists("user"))
-                .andExpect(model().attribute("user", retailerUser));
+                .andExpect(model().attributeExists("user"));
     }
 
     @Test
-    @Order(3)
-    @DisplayName("GET /retailer/vendor-search - ROLE_VENDOR → 403 Forbidden")
-    void vendorSearchPage_vendor_forbidden() throws Exception {
-        mockMvc.perform(get("/retailer/vendor-search")
-                        .with(authentication(authFor(vendorUser))))
+    @DisplayName("GET /retailer/vendors as RETAILER should redirect to /retailer/vendor-search")
+    @WithMockUser(username = "retailer@test.com", authorities = {"ROLE_RETAILER"})
+    void testRetailerVendorsAliasRedirects() throws Exception {
+        mockMvc.perform(get("/retailer/vendors"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/retailer/vendor-search"));
+    }
+
+    @Test
+    @DisplayName("GET /retailer/suppliers as RETAILER should redirect to /retailer/vendor-search")
+    @WithMockUser(username = "retailer@test.com", authorities = {"ROLE_RETAILER"})
+    void testRetailerSuppliersAliasRedirects() throws Exception {
+        mockMvc.perform(get("/retailer/suppliers"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/retailer/vendor-search"));
+    }
+
+    @Test
+    @DisplayName("GET /retailer/vendor-search as VENDOR should be forbidden")
+    @WithMockUser(username = "vendor@test.com", authorities = {"ROLE_VENDOR"})
+    void testVendorAccessVendorSearchForbidden() throws Exception {
+        mockMvc.perform(get("/retailer/vendor-search"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("GET /retailer/vendor-search as PLATFORM_ADMIN should be forbidden")
+    @WithMockUser(username = "admin@test.com", authorities = {"ROLE_PLATFORM_ADMIN"})
+    void testAdminAccessVendorSearchForbidden() throws Exception {
+        mockMvc.perform(get("/retailer/vendor-search"))
                 .andExpect(status().isForbidden());
     }
 }

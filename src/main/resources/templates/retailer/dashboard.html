@@ -38,7 +38,7 @@
         <div class="nav-section-label">Inventory</div>
         <a href="/retailer/inventory/add"><i class="fas fa-plus-circle"></i> Add Item</a>
         <a href="/retailer/inventory"><i class="fas fa-boxes"></i> View Inventory</a>
-        <a href="/vendors"><i class="fas fa-truck"></i> My Suppliers</a>
+        <a href="/retailer/vendor-search"><i class="fas fa-truck"></i> My Suppliers</a>
         <div class="nav-section-label">Finance</div>
         <a th:href="${hasProfile ? '/business-profile/bank?profileId=' + primaryProfile?.id : '/business-profile/create'}"><i class="fas fa-university"></i> Bank Details</a>
         <a th:href="${hasProfile ? '/business-profile/subscription?profileId=' + primaryProfile?.id : '/business-profile/create'}"><i class="fas fa-crown"></i> Subscription</a>
@@ -231,7 +231,7 @@
                         <div><div class="action-title">View Inventory</div><div class="action-sub">Browse and manage items</div></div>
                         <i class="fas fa-chevron-right ms-auto text-muted chevron-sm"></i>
                     </a>
-                    <a href="/vendors" class="action-card">
+                    <a href="/retailer/vendor-search" class="action-card">
                         <div class="action-icon action-icon-bg-purple"><i class="fas fa-handshake action-icon-color-purple"></i></div>
                         <div><div class="action-title">Manage Suppliers</div><div class="action-sub">View and connect</div></div>
                         <i class="fas fa-chevron-right ms-auto text-muted chevron-sm"></i>

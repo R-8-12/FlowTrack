@@ -29,7 +29,7 @@
         <div class="section">Inventory</div>
         <a href="/retailer/inventory/add"><i class="fas fa-plus-circle"></i> Add Item</a>
         <a href="/retailer/inventory"><i class="fas fa-boxes"></i> View Inventory</a>
-        <a href="/vendors"><i class="fas fa-truck"></i> My Suppliers</a>
+        <a href="/retailer/vendor-search"><i class="fas fa-truck"></i> My Suppliers</a>
         <div class="section">Finance</div>
         <a th:href="${hasProfile ? '/business-profile/bank?profileId=' + profiles[0].id : '/business-profile/create'}"><i class="fas fa-university"></i> Bank Details</a>
         <a th:href="${hasProfile ? '/business-profile/subscription?profileId=' + profiles[0].id : '/business-profile/create'}"><i class="fas fa-crown"></i> Subscription</a>
