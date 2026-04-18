@@ -214,6 +214,9 @@ function renderResults(data) {
             }
         });
         
+        // Load connection state for each card asynchronously
+        loadConnectionStates(data.vendors);
+        
         // Render pagination
         renderPagination(data);
     } else {
@@ -249,6 +252,9 @@ function createVendorCard(vendor) {
     
     const verifiedIcon = vendor.verified ? 
         '<i class="fas fa-check-circle text-success" title="Verified"></i>' : '';
+    
+    // Connection state button — will be updated asynchronously
+    const connectionBtnId = `conn-btn-${vendor.vendorId}`;
     
     return `
         <div class="col">
@@ -302,11 +308,83 @@ function createVendorCard(vendor) {
                         <button class="btn btn-outline-success btn-sm" onclick="placeOrder(${vendor.vendorId})">
                             <i class="fas fa-shopping-cart"></i> Order Now
                         </button>
+                        <div id="${connectionBtnId}">
+                            <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                                <span class="spinner-border spinner-border-sm"></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     `;
+}
+
+/**
+ * After rendering cards, load connection state for each vendor asynchronously.
+ */
+function loadConnectionStates(vendors) {
+    vendors.forEach(vendor => {
+        fetch(`/api/retailer/connections/status?vendorProfileId=${vendor.vendorId}`)
+            .then(r => r.json())
+            .then(data => {
+                const el = document.getElementById(`conn-btn-${vendor.vendorId}`);
+                if (!el) return;
+                const status = data.status || 'NONE';
+                if (status === 'NONE') {
+                    el.innerHTML = `<button class="btn btn-outline-primary btn-sm w-100" onclick="requestConnection(${vendor.vendorId}, this)">
+                        <i class="fas fa-handshake"></i> Connect
+                    </button>`;
+                } else if (status === 'REQUESTED') {
+                    el.innerHTML = `<button class="btn btn-warning btn-sm w-100" disabled>
+                        <i class="fas fa-clock"></i> Request Sent
+                    </button>`;
+                } else if (status === 'CONNECTED') {
+                    el.innerHTML = `<button class="btn btn-success btn-sm w-100" disabled>
+                        <i class="fas fa-check-circle"></i> Connected
+                    </button>`;
+                } else if (status === 'REJECTED') {
+                    el.innerHTML = `<button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        <i class="fas fa-times-circle"></i> Rejected
+                    </button>`;
+                } else if (status === 'BLOCKED') {
+                    el.innerHTML = `<button class="btn btn-danger btn-sm w-100" disabled>
+                        <i class="fas fa-ban"></i> Blocked
+                    </button>`;
+                }
+            })
+            .catch(() => {
+                const el = document.getElementById(`conn-btn-${vendor.vendorId}`);
+                if (el) el.innerHTML = '';
+            });
+    });
+}
+
+/**
+ * Send a connection request to a vendor.
+ */
+function requestConnection(vendorProfileId, btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+    const headers = { 'Content-Type': 'application/json' };
+    if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+
+    fetch('/api/retailer/connections', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ vendorProfileId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const el = document.getElementById(`conn-btn-${vendorProfileId}`);
+        if (el) {
+            el.innerHTML = `<button class="btn btn-warning btn-sm w-100" disabled>
+                <i class="fas fa-clock"></i> Request Sent
+            </button>`;
+        }
+    })
+    .catch(() => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-handshake"></i> Connect'; });
 }
 
 /**

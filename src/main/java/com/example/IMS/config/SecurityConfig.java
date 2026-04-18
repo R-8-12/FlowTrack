@@ -64,11 +64,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 
                 // Retailer Routes
                 .antMatchers("/api/retailer/vendors/**").hasAuthority("ROLE_RETAILER")
+                .antMatchers("/api/retailer/connections/**").hasAuthority("ROLE_RETAILER")
+                .antMatchers("/api/retailer/payments/**").hasAuthority("ROLE_RETAILER")
                 .antMatchers("/retailer/vendor-search").hasAuthority("ROLE_RETAILER")
                 .antMatchers("/retailer/**", "/inventory/**", "/transactions/**").hasAuthority("ROLE_RETAILER")
                 
                 // Vendor Routes
+                .antMatchers("/api/vendor/connections/**").hasAuthority("ROLE_VENDOR")
                 .antMatchers("/vendor/**", "/orders/**", "/products/**").hasAuthority("ROLE_VENDOR")
+                
+                // Analytics API (role checked at method level via @PreAuthorize)
+                .antMatchers("/api/analytics/**").authenticated()
                 
                 // Investor Routes
                 .antMatchers("/investor/**", "/investments/**", "/portfolio/**").hasAuthority("ROLE_INVESTOR")
