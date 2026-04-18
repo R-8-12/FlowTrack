@@ -90,6 +90,7 @@ public class VendorController {
         return "redirect:/vendors";
     }
 
+    
     // Delete vendor
     @GetMapping("/delete/{id}")
     public String deleteVendor(@PathVariable Long id, RedirectAttributes redirectAttributes) {
