@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-<div th:replace="header :: myHeader"></div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Status Report</title>
+    <th:block th:replace="header :: myHeader"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-common.css}">
 </head>
 <body class="sb-nav-fixed">
     <div th:replace="navbar :: myNavbar"></div>
@@ -35,8 +39,8 @@
                                         <span><span class="badge badge-secondary">DRAFT</span></span>
                                         <strong th:text="${statusBreakdown['DRAFT']}">0</strong>
                                     </div>
-                                    <div class="progress mb-3" style="height: 8px;">
-                                        <div class="progress-bar bg-secondary" role="progressbar"
+                                    <div class="progress mb-3 progress-thin">
+                                        <div class="progress-bar bg-secondary" role="progressbar" aria-label="Draft profiles" title="Draft profiles"
                                              th:style="${totalProfiles > 0} ? 'width:' + ${(statusBreakdown['DRAFT'] * 100 / totalProfiles)} + '%' : 'width:0%'"></div>
                                     </div>
 
@@ -44,8 +48,8 @@
                                         <span><span class="badge badge-info">PENDING</span></span>
                                         <strong th:text="${statusBreakdown['PENDING']}">0</strong>
                                     </div>
-                                    <div class="progress mb-3" style="height: 8px;">
-                                        <div class="progress-bar bg-info" role="progressbar"
+                                    <div class="progress mb-3 progress-thin">
+                                        <div class="progress-bar bg-info" role="progressbar" aria-label="Pending profiles" title="Pending profiles"
                                              th:style="${totalProfiles > 0} ? 'width:' + ${(statusBreakdown['PENDING'] * 100 / totalProfiles)} + '%' : 'width:0%'"></div>
                                     </div>
 
@@ -53,8 +57,8 @@
                                         <span><span class="badge badge-success">VERIFIED</span></span>
                                         <strong th:text="${statusBreakdown['VERIFIED']}">0</strong>
                                     </div>
-                                    <div class="progress mb-3" style="height: 8px;">
-                                        <div class="progress-bar bg-success" role="progressbar"
+                                    <div class="progress mb-3 progress-thin">
+                                        <div class="progress-bar bg-success" role="progressbar" aria-label="Verified profiles" title="Verified profiles"
                                              th:style="${totalProfiles > 0} ? 'width:' + ${(statusBreakdown['VERIFIED'] * 100 / totalProfiles)} + '%' : 'width:0%'"></div>
                                     </div>
 
@@ -62,8 +66,8 @@
                                         <span><span class="badge badge-danger">REJECTED</span></span>
                                         <strong th:text="${statusBreakdown['REJECTED']}">0</strong>
                                     </div>
-                                    <div class="progress" style="height: 8px;">
-                                        <div class="progress-bar bg-danger" role="progressbar"
+                                    <div class="progress progress-thin">
+                                        <div class="progress-bar bg-danger" role="progressbar" aria-label="Rejected profiles" title="Rejected profiles"
                                              th:style="${totalProfiles > 0} ? 'width:' + ${(statusBreakdown['REJECTED'] * 100 / totalProfiles)} + '%' : 'width:0%'"></div>
                                     </div>
                                 </div>
@@ -79,8 +83,8 @@
                                         <span><span class="badge badge-warning">TIER 1 COMPLETE</span></span>
                                         <strong th:text="${stageBreakdown['TIER1_COMPLETE']}">0</strong>
                                     </div>
-                                    <div class="progress mb-3" style="height: 8px;">
-                                        <div class="progress-bar bg-warning" role="progressbar"
+                                    <div class="progress mb-3 progress-thin">
+                                        <div class="progress-bar bg-warning" role="progressbar" aria-label="Tier 1 complete" title="Tier 1 complete"
                                              th:style="${totalProfiles > 0} ? 'width:' + ${(stageBreakdown['TIER1_COMPLETE'] * 100 / totalProfiles)} + '%' : 'width:0%'"></div>
                                     </div>
 
@@ -88,8 +92,8 @@
                                         <span><span class="badge badge-primary">TIER 2 COMPLETE</span></span>
                                         <strong th:text="${stageBreakdown['TIER2_COMPLETE']}">0</strong>
                                     </div>
-                                    <div class="progress mb-3" style="height: 8px;">
-                                        <div class="progress-bar bg-primary" role="progressbar"
+                                    <div class="progress mb-3 progress-thin">
+                                        <div class="progress-bar bg-primary" role="progressbar" aria-label="Tier 2 complete" title="Tier 2 complete"
                                              th:style="${totalProfiles > 0} ? 'width:' + ${(stageBreakdown['TIER2_COMPLETE'] * 100 / totalProfiles)} + '%' : 'width:0%'"></div>
                                     </div>
 
@@ -97,8 +101,8 @@
                                         <span><span class="badge badge-success">ACTIVE</span></span>
                                         <strong th:text="${stageBreakdown['ACTIVE']}">0</strong>
                                     </div>
-                                    <div class="progress" style="height: 8px;">
-                                        <div class="progress-bar bg-success" role="progressbar"
+                                    <div class="progress progress-thin">
+                                        <div class="progress-bar bg-success" role="progressbar" aria-label="Active profiles" title="Active profiles"
                                              th:style="${totalProfiles > 0} ? 'width:' + ${(stageBreakdown['ACTIVE'] * 100 / totalProfiles)} + '%' : 'width:0%'"></div>
                                     </div>
                                 </div>

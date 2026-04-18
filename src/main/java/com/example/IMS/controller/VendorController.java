@@ -1,6 +1,7 @@
 package com.example.IMS.controller;
 
 import com.example.IMS.model.Item;
+import com.example.IMS.model.User;
 import com.example.IMS.model.Vendor;
 import com.example.IMS.repository.IItemRepository;
 import com.example.IMS.repository.IVendorRepository;
@@ -9,11 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -31,18 +36,41 @@ public class VendorController {
     @Autowired
     private EmailService emailService;
 
-    // List all vendors
+    // List all vendors - role-aware redirect
     @GetMapping
     public String listVendors(Model model) {
+        if (hasRole("ROLE_RETAILER")) {
+            logger.info("Retailer accessing /vendors - redirecting to /retailer/vendor-search");
+            return "redirect:/retailer/vendor-search";
+        }
+        // Platform admin continues to legacy vendor master
         model.addAttribute("vendors", vendorRepository.findAll());
         return "vendor_list";
     }
 
-    // Show form to add vendor
+    // Show form to add vendor - role-aware redirect
     @GetMapping("/add")
     public String showAddVendorForm(Model model) {
+        if (hasRole("ROLE_RETAILER")) {
+            logger.info("Retailer accessing /vendors/add - redirecting to /retailer/vendor-search");
+            return "redirect:/retailer/vendor-search";
+        }
+        // Platform admin continues to legacy vendor form
         model.addAttribute("vendor", new Vendor());
         return "vendor_form";
+    }
+    
+    /**
+     * Check if current authenticated user has the specified role.
+     */
+    private boolean hasRole(String role) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getPrincipal() == null) {
+            return false;
+        }
+        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+        return authorities.stream()
+                .anyMatch(authority -> authority.getAuthority().equals(role));
     }
 
     // Save vendor

@@ -1,6 +1,7 @@
 package com.example.IMS.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.IMS.model.Item;
 
@@ -18,4 +19,6 @@ public interface IItemService {
 	String validateItemId(String itemName, String itemType);
 
 	void deleteItem(long itemId);
+
+	Optional<Item> findByNameAndType(String itemName, String itemTypeName);
 }

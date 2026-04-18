@@ -15,7 +15,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/admin/users")
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+@PreAuthorize("hasAuthority('ROLE_PLATFORM_ADMIN')")
 public class UserManagementController {
 
     @Autowired
@@ -43,8 +43,11 @@ public class UserManagementController {
         }
 
         try {
-            // Admin can assign specific roles
-            String roleName = userDto.getRole() != null ? userDto.getRole() : "ROLE_USER";
+            // Admin must explicitly specify role - no default assignment
+            if (userDto.getRole() == null) {
+                throw new RuntimeException("Role must be specified");
+            }
+            String roleName = userDto.getRole();
             userService.registerUserWithRole(userDto, roleName);
             return "redirect:/admin/users?success=true";
         } catch (RuntimeException e) {

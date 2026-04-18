@@ -1,0 +1,27 @@
+# Copy this file to application-local.properties for local development.
+# The real application-local.properties file is ignored by git.
+# Activate it with SPRING_PROFILES_ACTIVE=local or a run configuration.
+
+# Database credentials
+spring.datasource.username=YOUR_DB_USERNAME
+spring.datasource.password=YOUR_DB_PASSWORD
+
+# Gemini API
+gemini.api.key=YOUR_GEMINI_API_KEY
+
+# Mail credentials
+spring.mail.username=YOUR_SMTP_USERNAME
+spring.mail.password=YOUR_SMTP_PASSWORD
+mail.from.email=YOUR_FROM_EMAIL
+
+# Razorpay credentials
+razorpay.key.id=YOUR_RAZORPAY_KEY_ID
+razorpay.key.secret=YOUR_RAZORPAY_KEY_SECRET
+razorpay.webhook.secret=YOUR_RAZORPAY_WEBHOOK_SECRET
+
+# Google OAuth2 credentials for local development
+spring.security.oauth2.client.registration.google.client-id=YOUR_GOOGLE_CLIENT_ID
+spring.security.oauth2.client.registration.google.client-secret=YOUR_GOOGLE_CLIENT_SECRET
+
+# Optional: keep the redirect aligned with your local server port
+spring.security.oauth2.client.registration.google.redirect-uri={baseUrl}/login/oauth2/code/{registrationId}

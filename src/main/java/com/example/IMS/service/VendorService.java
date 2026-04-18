@@ -38,15 +38,11 @@ public class VendorService implements IVendorService {
 
 	@Override
 	public Vendor getVendorByName(String name) {
-		List<Vendor> vendorList = vendorRepository.findAll();
-		Vendor vendor = null;
-		for (Vendor v : vendorList) {
-			if (v.getName().equalsIgnoreCase(name)) {
-				vendor = v;
-				break;
-			}
-		}
-		return vendor;
+		return vendorRepository.findByNameIgnoreCase(name).orElse(null);
+	}
+
+	public Vendor getVendorByEmail(String email) {
+		return vendorRepository.findByEmailIgnoreCase(email).orElse(null);
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public class ItemController {
 	}
 
 	/** New modern Add Item form (retailer UI) */
-	@GetMapping("/retailer/inventory/add")
+	@GetMapping({"/retailer/inventory/add", "/items/add", "/retailer/items/add"})
 	public String retailerAddItem(Model model) {
 		model.addAttribute("itemDto", new ItemDto());
 		model.addAttribute("itemTypeList", itemTypeService.getAllItemTypes());

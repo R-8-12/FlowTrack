@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Orders - FlowTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/retailer-portal.css">
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <h4><i class="fas fa-warehouse me-2"></i>FlowTrack</h4>
+        <small>Retailer Portal</small>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a href="/retailer/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/business-profile/status"><i class="fas fa-building"></i> Business Profile</a>
+        <div class="nav-section-label">Inventory</div>
+        <a href="/retailer/inventory/add"><i class="fas fa-plus-circle"></i> Add Item</a>
+        <a href="/retailer/inventory"><i class="fas fa-boxes"></i> View Inventory</a>
+        <a href="/retailer/orders" class="active"><i class="fas fa-file-invoice"></i> Supplier Orders</a>
+        <a href="/retailer/vendor-search"><i class="fas fa-truck"></i> My Suppliers</a>
+        <div class="nav-section-label">Reports</div>
+        <a href="/reports"><i class="fas fa-chart-bar"></i> Reports</a>
+        <div class="nav-section-label">Account</div>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h5>Supplier Orders</h5>
+            <div class="text-muted topbar-subtitle">Track vendor processing for requested inventory items</div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/retailer/inventory/add" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus-circle me-1"></i> New Request
+            </a>
+            <a href="/retailer/dashboard" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div class="page-body">
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div th:if="${orders == null or #lists.isEmpty(orders)}" class="p-5 text-center text-muted">
+                    <i class="fas fa-file-invoice fa-2x mb-3 d-block"></i>
+                    No supplier orders yet. Create one from Add Item.
+                </div>
+
+                <div th:unless="${orders == null or #lists.isEmpty(orders)}" class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Item</th>
+                            <th>Supplier</th>
+                            <th>Qty</th>
+                            <th>Expected Price</th>
+                            <th>Status</th>
+                            <th>Vendor Notes</th>
+                            <th>Created</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td th:text="${order.id}">1</td>
+                            <td>
+                                <div class="fw-semibold" th:text="${order.itemName}">Item</div>
+                                <small class="text-muted" th:text="${order.itemTypeName}">Type</small>
+                            </td>
+                            <td th:text="${order.vendor != null ? order.vendor.name : 'NA'}">Vendor</td>
+                            <td th:text="${order.requestedQuantity}">0</td>
+                            <td th:text="${'₹' + #numbers.formatDecimal(order.expectedUnitPrice,1,'COMMA',2,'POINT')}">₹0.00</td>
+                            <td>
+                                <span th:switch="${order.status.name()}">
+                                    <span th:case="'REQUESTED'" class="badge text-bg-secondary">Requested</span>
+                                    <span th:case="'ACCEPTED'" class="badge text-bg-info">Accepted</span>
+                                    <span th:case="'REJECTED'" class="badge text-bg-danger">Rejected</span>
+                                    <span th:case="'SUPPLIED'" class="badge text-bg-success">Supplied</span>
+                                </span>
+                            </td>
+                            <td th:text="${order.vendorNotes != null ? order.vendorNotes : '—'}">—</td>
+                            <td th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}">—</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

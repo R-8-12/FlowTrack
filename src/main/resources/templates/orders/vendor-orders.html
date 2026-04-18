@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Orders - FlowTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-light">
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="mb-0">Vendor Orders</h4>
+            <small class="text-muted">Process retailer procurement requests</small>
+        </div>
+        <a href="/vendor/dashboard" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Dashboard
+        </a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <div th:if="${!vendorLinked}" class="alert alert-warning">
+        Your vendor login email is not linked to a supplier record. Please ensure a supplier exists in Vendor master with the same email.
+    </div>
+
+    <div class="card border-0 shadow-sm" th:if="${vendorLinked}">
+        <div class="card-body p-0">
+            <div th:if="${orders == null or #lists.isEmpty(orders)}" class="p-5 text-center text-muted">
+                <i class="fas fa-shopping-cart fa-2x mb-3 d-block"></i>
+                No supplier orders assigned to you yet.
+            </div>
+
+            <div th:unless="${orders == null or #lists.isEmpty(orders)}" class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Retailer</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Expected Price</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${order.id}">1</td>
+                        <td th:text="${order.retailer != null ? order.retailer.username : 'NA'}">Retailer</td>
+                        <td>
+                            <div class="fw-semibold" th:text="${order.itemName}">Item</div>
+                            <small class="text-muted" th:text="${order.itemTypeName}">Type</small>
+                        </td>
+                        <td th:text="${order.requestedQuantity}">0</td>
+                        <td th:text="${'₹' + #numbers.formatDecimal(order.expectedUnitPrice,1,'COMMA',2,'POINT')}">₹0.00</td>
+                        <td>
+                            <span th:switch="${order.status.name()}">
+                                <span th:case="'REQUESTED'" class="badge text-bg-secondary">Requested</span>
+                                <span th:case="'ACCEPTED'" class="badge text-bg-info">Accepted</span>
+                                <span th:case="'REJECTED'" class="badge text-bg-danger">Rejected</span>
+                                <span th:case="'SUPPLIED'" class="badge text-bg-success">Supplied</span>
+                            </span>
+                        </td>
+                        <td>
+                            <form th:if="${order.status.name() == 'REQUESTED' or order.status.name() == 'ACCEPTED'}"
+                                  th:action="@{'/orders/' + ${order.id} + '/status'}"
+                                  method="post"
+                                  class="d-flex flex-column gap-2">
+                                <select class="form-select form-select-sm" name="status" title="Order status update">
+                                    <option th:if="${order.status.name() == 'REQUESTED'}" value="ACCEPTED">Accept</option>
+                                    <option value="REJECTED">Reject</option>
+                                    <option th:if="${order.status.name() == 'ACCEPTED'}" value="SUPPLIED">Mark Supplied</option>
+                                </select>
+                                <input type="text" class="form-control form-control-sm" name="notes" placeholder="Notes (optional)">
+                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                            </form>
+                            <span th:if="${order.status.name() == 'REJECTED' or order.status.name() == 'SUPPLIED'}" class="text-muted">Closed</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

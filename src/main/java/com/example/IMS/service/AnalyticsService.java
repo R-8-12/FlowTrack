@@ -2,16 +2,20 @@ package com.example.IMS.service;
 
 import com.example.IMS.model.Item;
 import com.example.IMS.model.Loan;
+import com.example.IMS.model.enums.PaymentStatus;
 import com.example.IMS.repository.IItemRepository;
 import com.example.IMS.repository.IItemIssuanceRepository;
 import com.example.IMS.repository.IVendorRepository;
+import com.example.IMS.repository.ProcurementOrderRepository;
+import com.example.IMS.repository.ProcurementPaymentRepository;
+import com.example.IMS.repository.RetailerVendorConnectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 /**
- * Provides business analytics computed from Inventory, Loan, and Vendor data.
+ * Provides business analytics computed from Inventory, Loan, Vendor, Connection, and Payment data.
  */
 @Service
 public class AnalyticsService {
@@ -19,6 +23,9 @@ public class AnalyticsService {
     @Autowired private IItemRepository itemRepository;
     @Autowired private IItemIssuanceRepository loanRepository;
     @Autowired private IVendorRepository vendorRepository;
+    @Autowired private ProcurementOrderRepository orderRepository;
+    @Autowired private ProcurementPaymentRepository paymentRepository;
+    @Autowired private RetailerVendorConnectionRepository connectionRepository;
 
     /** Full analytics snapshot for the retailer dashboard */
     public RetailerStats getRetailerStats() {
@@ -59,6 +66,34 @@ public class AnalyticsService {
         return stats;
     }
 
+    /**
+     * Role-scoped retailer analytics for the new analytics dashboard.
+     *
+     * @param retailerUserId the authenticated retailer's user ID
+     */
+    public RetailerAnalytics getRetailerAnalytics(Long retailerUserId) {
+        RetailerAnalytics a = new RetailerAnalytics();
+        a.totalPurchases      = orderRepository.countByRetailerId(retailerUserId);
+        a.paidOrders          = paymentRepository.findByRetailerIdAndStatus(retailerUserId, PaymentStatus.PAID).size();
+        a.pendingOrders       = (int)(a.totalPurchases - a.paidOrders);
+        a.totalSpend          = paymentRepository.sumPaidAmountByRetailerId(retailerUserId);
+        a.connectedVendors    = connectionRepository.countConnectedVendorsByRetailerId(retailerUserId);
+        return a;
+    }
+
+    /**
+     * Role-scoped vendor analytics for the vendor dashboard.
+     *
+     * @param vendorProfileId the vendor's BusinessProfile ID
+     */
+    public VendorAnalytics getVendorAnalytics(Long vendorProfileId, Long vendorUserId) {
+        VendorAnalytics a = new VendorAnalytics();
+        a.connectedRetailers  = connectionRepository.countConnectedRetailersByVendorProfileId(vendorProfileId);
+        a.paidOrders          = paymentRepository.countPaidOrdersByVendorId(vendorProfileId);
+        a.totalRevenue        = paymentRepository.sumPaidAmountByVendorId(vendorProfileId);
+        return a;
+    }
+
     // ── Inner DTOs ─────────────────────────────────────────────────────────────
 
     public static class RetailerStats {
@@ -72,6 +107,20 @@ public class AnalyticsService {
         public double fineCollected;
         public List<ItemValueEntry>   topItems;
         public Map<String, Double>    stockDistribution;
+    }
+
+    public static class RetailerAnalytics {
+        public long   totalPurchases;
+        public int    paidOrders;
+        public int    pendingOrders;
+        public double totalSpend;
+        public long   connectedVendors;
+    }
+
+    public static class VendorAnalytics {
+        public long   connectedRetailers;
+        public long   paidOrders;
+        public double totalRevenue;
     }
 
     public static class ItemValueEntry {

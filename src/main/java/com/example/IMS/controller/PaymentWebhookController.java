@@ -1,6 +1,7 @@
 package com.example.IMS.controller;
 
 import com.example.IMS.service.EmailService;
+import com.example.IMS.service.ProcurementPaymentService;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,9 @@ public class PaymentWebhookController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private ProcurementPaymentService procurementPaymentService;
+
     /**
      * Razorpay sends POST /payment/webhook with:
      *   Header  : X-Razorpay-Signature  (HMAC-SHA256 of body using webhook secret)
@@ -66,6 +70,9 @@ public class PaymentWebhookController {
             logger.info("Razorpay webhook event received: {}", eventType);
 
             switch (eventType) {
+                case "payment.captured":
+                    handlePaymentCaptured(event);
+                    break;
                 case "payment.failed":
                     handlePaymentFailed(event);
                     break;
@@ -82,6 +89,25 @@ public class PaymentWebhookController {
         return ResponseEntity.ok("ok");
     }
 
+    // ── payment.captured ──────────────────────────────────────────────────────
+    private void handlePaymentCaptured(JSONObject event) {
+        try {
+            JSONObject paymentEntity = event
+                    .getJSONObject("payload")
+                    .getJSONObject("payment")
+                    .getJSONObject("entity");
+
+            String paymentId = paymentEntity.optString("id", "");
+            String orderId   = paymentEntity.optString("order_id", "");
+
+            logger.info("payment.captured — paymentId={}, orderId={}", paymentId, orderId);
+            procurementPaymentService.handlePaymentCaptured(paymentId, orderId);
+
+        } catch (Exception e) {
+            logger.error("Error handling payment.captured event — {}", e.getMessage(), e);
+        }
+    }
+
     // ── PE-04: payment.failed ─────────────────────────────────────────────────
     private void handlePaymentFailed(JSONObject event) {
         try {
@@ -91,11 +117,17 @@ public class PaymentWebhookController {
                     .getJSONObject("entity");
 
             String paymentId   = paymentEntity.optString("id", "N/A");
+            String orderId     = paymentEntity.optString("order_id", "");
             String email       = paymentEntity.optString("email", "");
             String description = paymentEntity.optString("description", "your subscription");
             String errorDesc   = paymentEntity.optString("error_description", "Payment could not be processed");
 
             logger.info("PE-04 payment.failed — paymentId={}, email={}, desc={}", paymentId, email, errorDesc);
+
+            // Update payment record status
+            if (!orderId.isBlank()) {
+                procurementPaymentService.handlePaymentFailed(orderId, errorDesc);
+            }
 
             if (!email.isBlank()) {
                 // We don't have the user's name from Razorpay, so use email as fallback

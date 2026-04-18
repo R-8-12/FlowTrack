@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,13 +25,13 @@
 <body>
 
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm" style="background: #2d3748 !important;">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm">
         <div class="container">
             <a class="navbar-brand" th:href="@{/landing}">
-                <i class="fas fa-chart-line" style="color: #4299e1;"></i>
-                <span class="fw-bold ms-2" style="color: white;">FlowTrack</span>
+                <i class="fas fa-chart-line"></i>
+                <span class="fw-bold ms-2">FlowTrack</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation" title="Toggle navigation menu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -51,11 +51,32 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#contact">Contact Us</a>
                     </li>
-                    <li class="nav-item ms-lg-3">
+                    <li class="nav-item ms-lg-3" sec:authorize="isAnonymous()">
                         <a class="btn btn-outline-primary" th:href="@{/login}">Login</a>
                     </li>
-                    <li class="nav-item ms-2">
+                    <li class="nav-item ms-2" sec:authorize="isAnonymous()">
                         <a class="btn btn-primary" href="#get-started">Get Started</a>
+                    </li>
+
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and hasAuthority('ROLE_PLATFORM_ADMIN')">
+                        <a class="btn btn-primary" th:href="@{/admin/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and hasAuthority('ROLE_RETAILER')">
+                        <a class="btn btn-primary" th:href="@{/retailer/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and hasAuthority('ROLE_VENDOR')">
+                        <a class="btn btn-primary" th:href="@{/vendor/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and hasAuthority('ROLE_INVESTOR')">
+                        <a class="btn btn-primary" th:href="@{/investor/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated() and !hasAnyAuthority('ROLE_PLATFORM_ADMIN','ROLE_RETAILER','ROLE_VENDOR','ROLE_INVESTOR')">
+                        <a class="btn btn-primary" th:href="@{/get-started}">Complete Role Setup</a>
+                    </li>
+                    <li class="nav-item ms-2" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-primary">Logout</button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -107,7 +128,7 @@
                         </div>
                         <h4 class="fw-bold mb-3">Inventory Tracking</h4>
                         <ul class="list-unstyled text-muted">
-                            <li><i class="fas fa-check text-success me-2"></i>Add, edit, delete items</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Add, Edit, Delete items</li>
                             <li><i class="fas fa-check text-success me-2"></i>Real-time stock updates</li>
                         </ul>
                     </div>
@@ -178,16 +199,16 @@
     </section>
 
     <!-- Call to Action Section -->
-    <section id="get-started" class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <section id="get-started" class="py-5 cta-section">
         <div class="container py-5">
             <div class="text-center text-white" data-aos="fade-up">
                 <h2 class="display-4 fw-bold mb-4">Ready to Get Started?</h2>
                 <p class="lead mb-5">Join thousands of businesses already using FlowTrack to streamline their operations</p>
                 <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    <a th:href="@{/get-started}" class="btn btn-light btn-lg px-5 py-3" style="border-radius: 50px; font-weight: 600;">
+                    <a th:href="@{/get-started}" class="btn btn-light btn-lg px-5 py-3 cta-pill-btn">
                         <i class="fas fa-rocket me-2"></i>Get Started Now
                     </a>
-                    <a th:href="@{/login}" class="btn btn-outline-light btn-lg px-5 py-3" style="border-radius: 50px; font-weight: 600; border-width: 2px;">
+                    <a th:href="@{/login}" class="btn btn-outline-light btn-lg px-5 py-3 cta-outline-pill-btn">
                         <i class="fas fa-sign-in-alt me-2"></i>Sign In
                     </a>
                 </div>
@@ -276,7 +297,7 @@
                         </div>
                         <ul class="pricing-features">
                             <li><i class="fas fa-check"></i>Full inventory control</li>
-                            <li><i class="fas fa-check"></i>Vendor & loan tracking</li>
+                            <li><i class="fas fa-check"></i>Vendor & Loan tracking</li>
                             <li><i class="fas fa-check"></i>AI Chatbot</li>
                             <li><i class="fas fa-check"></i>Role-based access</li>
                         </ul>
@@ -288,7 +309,7 @@
                         <div class="pricing-header">
                             <h4 class="fw-bold">Enterprise Plan</h4>
                             <div class="price">
-                                <span class="amount" style="font-size: 2rem;">Custom</span>
+                                <span class="amount amount-custom">Custom</span>
                             </div>
                         </div>
                         <ul class="pricing-features">
@@ -423,10 +444,10 @@
                 <div class="col-lg-4">
                     <h5 class="fw-bold mb-3">Follow Us</h5>
                     <div class="social-links">
-                        <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white" aria-label="Facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white" aria-label="Twitter" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white" aria-label="LinkedIn" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-white" aria-label="Instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>

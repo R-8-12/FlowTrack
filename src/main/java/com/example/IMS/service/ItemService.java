@@ -88,4 +88,9 @@ public class ItemService implements IItemService {
 		itemRepository.delete(item);
 	}
 
+	@Override
+	public Optional<Item> findByNameAndType(String itemName, String itemTypeName) {
+		return itemRepository.findByNameIgnoreCaseAndItemType_TypeNameIgnoreCase(itemName, itemTypeName);
+	}
+
 }

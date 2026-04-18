@@ -24,33 +24,16 @@ public class UserService implements IUserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * @deprecated This method references the non-existent ROLE_USER from the legacy IMS system.
+     * Use {@link #registerUserWithRole(UserRegistrationDto, String)} instead to explicitly specify a role.
+     * FlowTrack uses: ROLE_PLATFORM_ADMIN, ROLE_RETAILER, ROLE_VENDOR, ROLE_INVESTOR.
+     */
+    @Deprecated
     @Override
     @Transactional
     public User registerUser(UserRegistrationDto registrationDto) {
-        if (userRepository.existsByUsername(registrationDto.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
-        
-        if (userRepository.existsByEmail(registrationDto.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
-
-        User user = new User();
-        user.setUsername(registrationDto.getUsername());
-        user.setEmail(registrationDto.getEmail());
-        user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-        user.setFirstName(registrationDto.getFirstName());
-        user.setLastName(registrationDto.getLastName());
-        user.setEnabled(true);
-
-        // SECURITY: Self-registration always gets ROLE_USER
-        // Only admins can assign other roles via admin panel
-        Role role = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Default role ROLE_USER not found"));
-        
-        user.addRole(role);
-
-        return userRepository.save(user);
+        throw new UnsupportedOperationException("Use registerUserWithRole() instead");
     }
     
     @Override
@@ -81,6 +64,26 @@ public class UserService implements IUserService {
         
         user.addRole(role);
 
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User assignRoleToExistingUser(Long userId, String roleName, String firstName, String lastName) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Role role = roleRepository.findByName(roleName)
+                .orElseGet(() -> roleRepository.save(new Role(roleName)));
+
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            user.setFirstName(firstName.trim());
+        }
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            user.setLastName(lastName.trim());
+        }
+
+        user.addRole(role);
         return userRepository.save(user);
     }
 

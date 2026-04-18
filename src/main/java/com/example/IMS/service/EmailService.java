@@ -361,4 +361,62 @@ public class EmailService {
             "</body></html>", borrowerName, amountPaid, remaining);
         sendHtmlEmail(to, subject, body);
     }
+
+    /** Supplier order request email to vendor */
+    public void sendSupplierOrderRequestEmail(String to, String vendorName, String retailerName,
+                                              Long orderId, String itemName, int quantity,
+                                              double unitPrice, String notes) {
+        String subject = "FlowTrack — New Supplier Order #" + orderId;
+        String body = String.format(
+            "<html><body>" +
+            "<h2>🛒 New Supplier Order</h2>" +
+            "<p>Hi %s,</p>" +
+            "<p><strong>%s</strong> has requested supply for the following item:</p>" +
+            "<ul>" +
+            "<li><strong>Order ID:</strong> %d</li>" +
+            "<li><strong>Item:</strong> %s</li>" +
+            "<li><strong>Quantity:</strong> %d</li>" +
+            "<li><strong>Expected Unit Price:</strong> ₹%.2f</li>" +
+            "<li><strong>Notes:</strong> %s</li>" +
+            "</ul>" +
+            "<p>Please log in to your vendor dashboard and update the order status.</p>" +
+            "<br><p>Best regards,<br>FlowTrack Team</p>" +
+            "</body></html>",
+            vendorName,
+            retailerName,
+            orderId,
+            itemName,
+            quantity,
+            unitPrice,
+            notes == null || notes.isBlank() ? "NA" : notes);
+        sendHtmlEmail(to, subject, body);
+    }
+
+    /** Supplier order status update email to retailer */
+    public void sendSupplierOrderStatusEmail(String to, String retailerName, Long orderId,
+                                             String itemName, String status,
+                                             String vendorName, String notes) {
+        String subject = "FlowTrack — Supplier Order #" + orderId + " " + status;
+        String body = String.format(
+            "<html><body>" +
+            "<h2>📦 Supplier Order Update</h2>" +
+            "<p>Hi %s,</p>" +
+            "<p>Your supplier order has been updated by <strong>%s</strong>.</p>" +
+            "<ul>" +
+            "<li><strong>Order ID:</strong> %d</li>" +
+            "<li><strong>Item:</strong> %s</li>" +
+            "<li><strong>Status:</strong> %s</li>" +
+            "<li><strong>Vendor Notes:</strong> %s</li>" +
+            "</ul>" +
+            "<p>If status is SUPPLIED, inventory has been updated automatically.</p>" +
+            "<br><p>Best regards,<br>FlowTrack Team</p>" +
+            "</body></html>",
+            retailerName,
+            vendorName,
+            orderId,
+            itemName,
+            status,
+            notes == null || notes.isBlank() ? "NA" : notes);
+        sendHtmlEmail(to, subject, body);
+    }
 }

@@ -1,0 +1,93 @@
+# Implementation Plan
+
+- [x] 1. Write bug condition exploration test
+  - **Property 1: Bug Condition** - Legacy Role References Cause Access Denial and Registration Failures
+  - **CRITICAL**: This test MUST FAIL on unfixed code - failure confirms the bug exists
+  - **DO NOT attempt to fix the test or the code when it fails**
+  - **NOTE**: This test encodes the expected behavior - it will validate the fix when it passes after implementation
+  - **GOAL**: Surface counterexamples that demonstrate the bug exists
+  - **Scoped PBT Approach**: For deterministic bugs, scope the property to the concrete failing case(s) to ensure reproducibility
+  - Test implementation details from Bug Condition in design:
+    - Test that ROLE_PLATFORM_ADMIN user accessing /admin/users returns 403 Forbidden (checks for non-existent ROLE_ADMIN)
+    - Test that UserService.registerUser() throws RuntimeException "Default role ROLE_USER not found"
+    - Test that UserManagementController.addUser() with null role defaults to non-existent "ROLE_USER"
+  - The test assertions should match the Expected Behavior Properties from design:
+    - After fix: ROLE_PLATFORM_ADMIN should access /admin/users successfully (Property 1)
+    - After fix: registerUser() should not throw exception or be deprecated (Property 2)
+    - After fix: addUser() should require explicit role selection (Property 3)
+  - Run test on UNFIXED code
+  - **EXPECTED OUTCOME**: Test FAILS (this is correct - it proves the bug exists)
+  - Document counterexamples found to understand root cause:
+    - HTTP 403 responses for /admin/users access
+    - RuntimeException messages
+    - Stack traces showing role lookup failures
+  - Mark task complete when test is written, run, and failure is documented
+  - _Requirements: 1.1, 1.2, 1.3_
+
+- [x] 2. Write preservation property tests (BEFORE implementing fix)
+  - **Property 2: Preservation** - Registration Flows and Role System Integrity
+  - **IMPORTANT**: Follow observation-first methodology
+  - Observe behavior on UNFIXED code for non-buggy inputs:
+    - Verify /register/retailer assigns ROLE_RETAILER correctly
+    - Verify /register/vendor assigns ROLE_VENDOR correctly
+    - Verify /register/investor assigns ROLE_INVESTOR correctly
+    - Verify DataInitializer creates exactly 4 FlowTrack roles
+    - Verify SecurityConfig authorizes /retailer/**, /vendor/**, /investor/**, /platform/** correctly
+    - Verify platform admin account gets ROLE_PLATFORM_ADMIN
+  - Write property-based tests capturing observed behavior patterns from Preservation Requirements:
+    - Test that registration flows continue to assign correct roles (Property 4)
+    - Test that DataInitializer continues to create only 4 roles (Property 5)
+    - Test that SecurityConfig authorization rules remain unchanged for non-/admin/users paths (Property 6)
+    - Test that platform admin account creation continues to work (Property 7)
+  - Property-based testing generates many test cases for stronger guarantees
+  - Run tests on UNFIXED code
+  - **EXPECTED OUTCOME**: Tests PASS (this confirms baseline behavior to preserve)
+  - Mark task complete when tests are written, run, and passing on unfixed code
+  - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+- [x] 3. Fix for legacy role references in UserManagementController and UserService
+
+  - [x] 3.1 Update UserManagementController to use ROLE_PLATFORM_ADMIN
+    - Change @PreAuthorize annotation from "hasAuthority('ROLE_ADMIN')" to "hasAuthority('ROLE_PLATFORM_ADMIN')"
+    - Update addUser() method to require explicit role selection instead of defaulting to "ROLE_USER"
+    - Add validation: if (userDto.getRole() == null) throw new RuntimeException("Role must be specified")
+    - _Bug_Condition: isBugCondition(input) where input.referencedRole IN ['ROLE_ADMIN', 'ROLE_USER'] AND input.referencedRole NOT IN databaseRoles_
+    - _Expected_Behavior: For any HTTP request to /admin/users endpoints where the authenticated user has ROLE_PLATFORM_ADMIN authority, the fixed UserManagementController SHALL grant access by checking for 'ROLE_PLATFORM_ADMIN' instead of non-existent 'ROLE_ADMIN' (Property 1). For any user creation through UserManagementController.addUser() where no role is specified, the fixed implementation SHALL require explicit role selection from the 4 valid FlowTrack roles (Property 3)._
+    - _Preservation: RegistrationController flows, DataInitializer role creation, SecurityConfig authorization rules, and platform admin account creation must remain unchanged (Properties 4, 5, 6, 7)_
+    - _Requirements: 2.1, 2.3_
+
+  - [x] 3.2 Deprecate or update UserService.registerUser() method
+    - Option A (Recommended): Mark registerUser() as @Deprecated and throw UnsupportedOperationException with message "Use registerUserWithRole() instead"
+    - Option B: Update to use ROLE_RETAILER instead of ROLE_USER and update comment
+    - Remove hardcoded reference to non-existent "ROLE_USER"
+    - _Bug_Condition: isBugCondition(input) where input.referencedRole = 'ROLE_USER' AND 'ROLE_USER' NOT IN databaseRoles_
+    - _Expected_Behavior: For any call to UserService.registerUser() method, the fixed implementation SHALL NOT attempt to auto-assign a default role, and instead SHALL either require explicit role specification or be deprecated in favor of registerUserWithRole() (Property 2)._
+    - _Preservation: registerUserWithRole(), assignRoleToExistingUser(), and all other UserService methods must remain unchanged_
+    - _Requirements: 2.2_
+
+  - [x] 3.3 Verify bug condition exploration test now passes
+    - **Property 1: Expected Behavior** - Legacy Role References Fixed
+    - **IMPORTANT**: Re-run the SAME test from task 1 - do NOT write a new test
+    - The test from task 1 encodes the expected behavior
+    - When this test passes, it confirms the expected behavior is satisfied
+    - Run bug condition exploration test from step 1
+    - **EXPECTED OUTCOME**: Test PASSES (confirms bug is fixed)
+    - Verify ROLE_PLATFORM_ADMIN can access /admin/users endpoints
+    - Verify registerUser() no longer throws "Default role ROLE_USER not found" exception
+    - Verify addUser() requires explicit role selection
+    - _Requirements: 2.1, 2.2, 2.3_
+
+  - [x] 3.4 Verify preservation tests still pass
+    - **Property 2: Preservation** - Registration Flows and Role System Integrity
+    - **IMPORTANT**: Re-run the SAME tests from task 2 - do NOT write new tests
+    - Run preservation property tests from step 2
+    - **EXPECTED OUTCOME**: Tests PASS (confirms no regressions)
+    - Confirm all tests still pass after fix (no regressions):
+      - Registration flows continue to assign correct roles
+      - DataInitializer continues to create only 4 roles
+      - SecurityConfig authorization rules unchanged for non-/admin/users paths
+      - Platform admin account creation continues to work
+    - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+- [x] 4. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.

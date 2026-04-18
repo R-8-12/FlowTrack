@@ -137,6 +137,27 @@ public class BusinessProfile {
     @Column(name = "last_payment_id", length = 100)
     private String lastPaymentId;
 
+    // ── Vendor Metadata (for vendor search and recommendation) ───────────────
+    /** Default delivery days for vendor orders (default: 7 days) */
+    @Column(name = "default_delivery_days")
+    private Integer defaultDeliveryDays = 7;
+
+    /** Reliability score based on order history (0.0-1.0, default: 0.0) */
+    @Column(name = "reliability_score")
+    private Double reliabilityScore = 0.0;
+
+    /** Average rating from retailer reviews (0.0-5.0, default: 0.0) */
+    @Column(name = "rating")
+    private Double rating = 0.0;
+
+    /** Total number of orders received by this vendor (default: 0) */
+    @Column(name = "total_orders")
+    private Integer totalOrders = 0;
+
+    /** Number of successfully completed orders (default: 0) */
+    @Column(name = "completed_orders")
+    private Integer completedOrders = 0;
+
     /**
      * One-to-Many relationship with BankDetails
      * One business can have multiple bank accounts
@@ -337,6 +358,32 @@ public class BusinessProfile {
         return subscriptionPlan != null && subscriptionExpiryDate != null
                 && !subscriptionExpiryDate.isBefore(LocalDate.now());
     }
+
+    // ── Vendor Metadata getters/setters ──────────────────────────────────────
+    public Integer getDefaultDeliveryDays() { return defaultDeliveryDays; }
+    public void setDefaultDeliveryDays(Integer defaultDeliveryDays) { this.defaultDeliveryDays = defaultDeliveryDays; }
+
+    public Double getReliabilityScore() { return reliabilityScore; }
+    public void setReliabilityScore(Double reliabilityScore) { 
+        if (reliabilityScore != null && (reliabilityScore < 0.0 || reliabilityScore > 1.0)) {
+            throw new IllegalArgumentException("Reliability score must be between 0.0 and 1.0");
+        }
+        this.reliabilityScore = reliabilityScore; 
+    }
+
+    public Double getRating() { return rating; }
+    public void setRating(Double rating) { 
+        if (rating != null && (rating < 0.0 || rating > 5.0)) {
+            throw new IllegalArgumentException("Rating must be between 0.0 and 5.0");
+        }
+        this.rating = rating; 
+    }
+
+    public Integer getTotalOrders() { return totalOrders; }
+    public void setTotalOrders(Integer totalOrders) { this.totalOrders = totalOrders; }
+
+    public Integer getCompletedOrders() { return completedOrders; }
+    public void setCompletedOrders(Integer completedOrders) { this.completedOrders = completedOrders; }
 
     // Helper methods
     

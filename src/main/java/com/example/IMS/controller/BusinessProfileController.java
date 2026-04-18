@@ -95,6 +95,7 @@ public class BusinessProfileController {
         List<BusinessProfile> profiles = businessProfileRepository.findByUserId(currentUser.getId());
         model.addAttribute("profiles", profiles);
         model.addAttribute("hasProfile", !profiles.isEmpty());
+        addRoleFlags(model, currentUser);
         return "business-profile/status";
     }
 
@@ -120,6 +121,7 @@ public class BusinessProfileController {
                             + "Contact support if you need to make changes.");
             model.addAttribute("profiles", profiles);
             model.addAttribute("hasProfile", !profiles.isEmpty());
+            addRoleFlags(model, currentUser);
             return "business-profile/status";
         }
 
@@ -233,5 +235,14 @@ public class BusinessProfileController {
         req.setState(profile.getState());
         req.setPincode(profile.getPincode());
         return req;
+    }
+
+    private void addRoleFlags(Model model, User user) {
+        boolean isRetailer = user.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_RETAILER".equals(a.getAuthority()));
+        boolean isVendor = user.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_VENDOR".equals(a.getAuthority()));
+        model.addAttribute("isRetailer", isRetailer);
+        model.addAttribute("isVendor", isVendor);
     }
 }

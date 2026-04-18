@@ -1,0 +1,20 @@
+CREATE TABLE procurement_orders (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    retailer_user_id BIGINT NOT NULL,
+    vendor_id BIGINT NOT NULL,
+    item_name VARCHAR(100) NOT NULL,
+    item_type_name VARCHAR(100) NOT NULL,
+    requested_quantity INT NOT NULL,
+    expected_unit_price DOUBLE NOT NULL,
+    expected_fine_rate DOUBLE NOT NULL,
+    requested_invoice_number BIGINT NULL,
+    retailer_notes VARCHAR(1000) NULL,
+    vendor_notes VARCHAR(1000) NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'REQUESTED',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    supplied_at DATETIME NULL,
+    INDEX idx_procurement_orders_retailer (retailer_user_id),
+    INDEX idx_procurement_orders_vendor (vendor_id),
+    INDEX idx_procurement_orders_status (status)
+);

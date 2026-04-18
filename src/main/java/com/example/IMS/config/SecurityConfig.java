@@ -44,7 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
+            .csrf()
+                .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .and()
             .authorizeRequests()
                 // Public resources
                 .antMatchers("/css/**", "/js/**", "/images/**", "/api/chatbot/**").permitAll()
@@ -61,10 +63,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**", "/platform/**").hasAuthority("ROLE_PLATFORM_ADMIN")
                 
                 // Retailer Routes
+                .antMatchers("/api/retailer/vendors/**").hasAuthority("ROLE_RETAILER")
+                .antMatchers("/api/retailer/connections/**").hasAuthority("ROLE_RETAILER")
+                .antMatchers("/api/retailer/payments/**").hasAuthority("ROLE_RETAILER")
+                .antMatchers("/retailer/vendor-search").hasAuthority("ROLE_RETAILER")
                 .antMatchers("/retailer/**", "/inventory/**", "/transactions/**").hasAuthority("ROLE_RETAILER")
                 
                 // Vendor Routes
+                .antMatchers("/api/vendor/connections/**").hasAuthority("ROLE_VENDOR")
                 .antMatchers("/vendor/**", "/orders/**", "/products/**").hasAuthority("ROLE_VENDOR")
+                
+                // Analytics API (role checked at method level via @PreAuthorize)
+                .antMatchers("/api/analytics/**").authenticated()
                 
                 // Investor Routes
                 .antMatchers("/investor/**", "/investments/**", "/portfolio/**").hasAuthority("ROLE_INVESTOR")
@@ -100,12 +110,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userInfoEndpoint()
                     .userService(googleOAuth2UserService)
                 .and()
+                .failureHandler((request, response, exception) -> response.sendRedirect("/login?oauth2Error=true"))
                 .successHandler(googleOAuth2SuccessHandler)
             .and()
             .rememberMe()
                 .rememberMeParameter("remember-me")
                 .key("flowtrack-secure-remember-me-key-2026")
-                .tokenValiditySeconds(30 * 24 * 60 * 60)  // 30 days
+                .tokenValiditySeconds(30 * 24 * 60 * 60)
                 .userDetailsService(userDetailsService)
             .and()
             .logout()
