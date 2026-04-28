@@ -68,6 +68,7 @@ public class VendorController {
         if (auth == null || auth.getPrincipal() == null) {
             return false;
         }
+        
         Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
         return authorities.stream()
                 .anyMatch(authority -> authority.getAuthority().equals(role));
@@ -90,7 +91,7 @@ public class VendorController {
         return "redirect:/vendors";
     }
 
-    
+
     // Delete vendor
     @GetMapping("/delete/{id}")
     public String deleteVendor(@PathVariable Long id, RedirectAttributes redirectAttributes) {

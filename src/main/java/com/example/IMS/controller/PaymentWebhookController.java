@@ -9,25 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Formatter;
 
-/**
- * Razorpay Webhook Receiver
- *
- * Handles inbound events pushed by Razorpay to /payment/webhook.
- * This endpoint is public (no session required) — signature verification
- * ensures only genuine Razorpay calls are processed.
- *
- * Configured events (Razorpay Dashboard → Webhooks → Active Events):
- *   - payment.failed   → PE-04: notify user that payment failed
- *
- * Webhook Secret: set razorpay.webhook.secret in application.properties
- *   (different from razorpay.key.secret — configure in Razorpay Dashboard)
- */
+
 @RestController
 @RequestMapping("/payment")
 public class PaymentWebhookController {
