@@ -162,6 +162,8 @@ public class RegistrationController {
 
             User savedUser = userService.registerUserWithRole(userDto, "ROLE_RETAILER");
 
+            userService.createRetailerProfile(savedUser, dto);
+
             // Persist business hints so business-profile/create can be pre-populated
             userService.saveRegistrationHints(
                 savedUser.getId(),
@@ -286,6 +288,8 @@ public class RegistrationController {
             userDto.setLastName(dto.getLastName());
 
             User savedUser = userService.registerUserWithRole(userDto, "ROLE_VENDOR");
+
+            userService.createVendorProfile(savedUser, dto);
 
             // Persist business hints so business-profile/create can be pre-populated
             userService.saveRegistrationHints(

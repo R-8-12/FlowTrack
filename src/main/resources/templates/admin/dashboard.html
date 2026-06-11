@@ -19,10 +19,12 @@
     <div class="d-flex align-items-center gap-3">
         <span class="admin-badge"><i class="fas fa-shield-alt me-1"></i>Platform Admin</span>
         <span class="text-white-50 admin-user-name" th:text="${adminName}">Admin</span>
-        <a href="/logout"
-           class="btn btn-sm admin-logout-btn">
-            <i class="fas fa-sign-out-alt me-1"></i>Logout
-        </a>
+        <form th:action="@{/logout}" method="post" class="d-inline">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-sm admin-logout-btn">
+                <i class="fas fa-sign-out-alt me-1"></i>Logout
+            </button>
+        </form>
     </div>
 </nav>
 
@@ -189,10 +191,12 @@
                 </div>
                 <h6 class="text-color-gray">Sign Out</h6>
                 <p class="text-color-muted">End your admin session securely.</p>
-                <a href="/logout"
-                   class="btn-action btn-action-gray">
-                    <i class="fas fa-sign-out-alt me-1"></i>Logout
-                </a>
+                <form th:action="@{/logout}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn-action btn-action-gray" style="border:none;cursor:pointer;">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </button>
+                </form>
             </div>
         </div>
 

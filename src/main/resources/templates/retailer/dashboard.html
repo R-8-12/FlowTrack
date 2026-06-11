@@ -48,9 +48,12 @@
         <a href="/onboarding/required"><i class="fas fa-tasks"></i> Onboarding</a>
     </nav>
     <div class="sidebar-footer">
-        <a th:href="@{/logout}" class="sidebar-logout-link">
-            <i class="fas fa-sign-out-alt me-2"></i> Sign Out
-        </a>
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="sidebar-logout-link" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">
+                <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+            </button>
+        </form>
     </div>
 </div>
 
@@ -64,7 +67,10 @@
             <span th:if="${hasSubscription}" class="badge text-bg-success" th:text="${subscriptionPlan + ' Plan'}">PLAN</span>
             <span th:unless="${hasSubscription}" class="badge text-bg-warning text-dark">No Subscription</span>
             <span class="badge text-bg-primary">RETAILER</span>
-            <a th:href="@{/logout}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-sign-out-alt"></i></a>
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn btn-outline-secondary btn-sm"><i class="fas fa-sign-out-alt"></i></button>
+            </form>
         </div>
     </div>
 

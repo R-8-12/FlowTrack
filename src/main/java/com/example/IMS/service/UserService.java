@@ -1,10 +1,16 @@
 package com.example.IMS.service;
 
+import com.example.IMS.dto.RetailerRegistrationDto;
+import com.example.IMS.dto.VendorRegistrationDto;
 import com.example.IMS.dto.UserRegistrationDto;
 import com.example.IMS.model.Role;
+import com.example.IMS.model.RetailerProfile;
 import com.example.IMS.model.User;
+import com.example.IMS.model.VendorProfile;
 import com.example.IMS.repository.IRoleRepository;
 import com.example.IMS.repository.IUserRepository;
+import com.example.IMS.repository.IRetailerProfileRepository;
+import com.example.IMS.repository.IVendorProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +29,12 @@ public class UserService implements IUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IRetailerProfileRepository retailerProfileRepository;
+
+    @Autowired
+    private IVendorProfileRepository vendorProfileRepository;
 
     /**
      * @deprecated This method references the non-existent ROLE_USER from the legacy IMS system.
@@ -65,6 +77,57 @@ public class UserService implements IUserService {
         user.addRole(role);
 
         return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void createRetailerProfile(User user, RetailerRegistrationDto registrationDto) {
+        if (user == null) {
+            throw new RuntimeException("User not found for retailer profile creation");
+        }
+
+        RetailerProfile profile = retailerProfileRepository.findByUserId(user.getId())
+                .orElseGet(RetailerProfile::new);
+        profile.setUser(user);
+        profile.setBusinessName(registrationDto.getBusinessName());
+        profile.setBusinessType(registrationDto.getBusinessType());
+        profile.setTrademark(registrationDto.getTrademark());
+        profile.setBusinessRegistrationNumber(registrationDto.getBusinessRegistrationNumber());
+        profile.setGstNumber(registrationDto.getGstNumber());
+        profile.setBusinessAddress(registrationDto.getBusinessAddress());
+        profile.setPhoneNumber(registrationDto.getPhoneNumber());
+        profile.setBusinessDescription(registrationDto.getBusinessDescription());
+        profile.setProofOfIdentityUrl(registrationDto.getProofOfIdentityUrl());
+        profile.setBusinessLicenseUrl(registrationDto.getBusinessLicenseUrl());
+        retailerProfileRepository.save(profile);
+    }
+
+    @Override
+    @Transactional
+    public void createVendorProfile(User user, VendorRegistrationDto registrationDto) {
+        if (user == null) {
+            throw new RuntimeException("User not found for vendor profile creation");
+        }
+
+        VendorProfile profile = vendorProfileRepository.findByUserId(user.getId())
+                .orElseGet(VendorProfile::new);
+        profile.setUser(user);
+        profile.setCompanyName(registrationDto.getCompanyName());
+        profile.setBusinessType(registrationDto.getBusinessType());
+        profile.setTradeLicenseNumber(registrationDto.getTradeLicenseNumber());
+        profile.setGstNumber(registrationDto.getGstNumber());
+        profile.setPanNumber(registrationDto.getPanNumber());
+        profile.setCompanyAddress(registrationDto.getCompanyAddress());
+        profile.setPhoneNumber(registrationDto.getPhoneNumber());
+        profile.setProductCategories(registrationDto.getProductCategories());
+        profile.setCompanyDescription(registrationDto.getCompanyDescription());
+        profile.setBankAccountNumber(registrationDto.getBankAccountNumber());
+        profile.setBankName(registrationDto.getBankName());
+        profile.setBankIfscCode(registrationDto.getBankIfscCode());
+        profile.setTradeLicenseUrl(registrationDto.getTradeLicenseUrl());
+        profile.setGstCertificateUrl(registrationDto.getGstCertificateUrl());
+        profile.setCompanyRegistrationUrl(registrationDto.getCompanyRegistrationUrl());
+        vendorProfileRepository.save(profile);
     }
 
     @Override
