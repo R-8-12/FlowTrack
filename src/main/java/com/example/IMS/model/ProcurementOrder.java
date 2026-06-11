@@ -1,7 +1,20 @@
 package com.example.IMS.model;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "procurement_orders")
@@ -18,6 +31,15 @@ public class ProcurementOrder {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id", nullable = false)
     private Vendor vendor;
+
+    /**
+     * The vendor's BusinessProfile — used by the new vendor order flow.
+     * Populated when a retailer places an order via the vendor-search connection workflow.
+     * May be null for legacy orders created before Phase 3.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendor_profile_id")
+    private BusinessProfile vendorProfile;
 
     @Column(name = "item_name", nullable = false, length = 100)
     private String itemName;
@@ -90,6 +112,14 @@ public class ProcurementOrder {
 
     public void setVendor(Vendor vendor) {
         this.vendor = vendor;
+    }
+
+    public BusinessProfile getVendorProfile() {
+        return vendorProfile;
+    }
+
+    public void setVendorProfile(BusinessProfile vendorProfile) {
+        this.vendorProfile = vendorProfile;
     }
 
     public String getItemName() {

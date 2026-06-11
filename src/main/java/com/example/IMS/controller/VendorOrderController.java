@@ -1,12 +1,13 @@
 package com.example.IMS.controller;
 
+import com.example.IMS.model.BusinessProfile;
 import com.example.IMS.model.ProcurementOrder;
 import com.example.IMS.model.ProcurementOrderStatus;
 import com.example.IMS.model.User;
-import com.example.IMS.model.Vendor;
-import com.example.IMS.service.ProcurementOrderService;
-import com.example.IMS.service.VendorService;
+import com.example.IMS.repository.BusinessProfileRepository;
+import com.example.IMS.repository.ProcurementOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -18,55 +19,95 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 @Controller
+@RequestMapping("/orders")
+@PreAuthorize("hasAuthority('ROLE_VENDOR')")
 public class VendorOrderController {
 
     @Autowired
-    private VendorService vendorService;
+    private BusinessProfileRepository businessProfileRepository;
 
     @Autowired
-    private ProcurementOrderService procurementOrderService;
+    private ProcurementOrderRepository procurementOrderRepository;
 
-    @GetMapping("/orders")
+    /**
+     * List all procurement orders for this vendor, looked up via their BusinessProfile.
+     * Falls back gracefully when no business profile exists yet.
+     */
+    @GetMapping
     public String listVendorOrders(Model model) {
         User user = currentUser();
-        Vendor vendor = vendorService.getVendorByEmail(user.getEmail());
+        List<BusinessProfile> profiles = businessProfileRepository.findByUserId(user.getId());
 
-        if (vendor == null) {
+        if (profiles.isEmpty()) {
             model.addAttribute("vendorLinked", false);
             model.addAttribute("orders", Collections.emptyList());
+            model.addAttribute("user", user);
             return "orders/vendor-orders";
         }
 
-        List<ProcurementOrder> orders = procurementOrderService.getVendorOrders(vendor);
+        // Use the legacy vendor_id FK via the first profile's linked Vendor record.
+        // ProcurementOrder.vendor references the legacy Vendor entity; we fetch by
+        // matching the vendor email to the user's email as the bridge until full migration.
+        // For now surface all orders where the retailer has connected to this vendor profile.
+        List<ProcurementOrder> orders = procurementOrderRepository
+                .findByVendorProfileId(profiles.get(0).getId());
+
         model.addAttribute("vendorLinked", true);
         model.addAttribute("orders", orders);
+        model.addAttribute("user", user);
+        model.addAttribute("vendorProfile", profiles.get(0));
         return "orders/vendor-orders";
     }
 
-    @PostMapping("/orders/{id}/status")
+    /**
+     * Accept or reject an incoming order, or mark it as supplied.
+     */
+    @PostMapping("/{id}/status")
     public String updateOrderStatus(@PathVariable("id") Long orderId,
                                     @RequestParam("status") String status,
                                     @RequestParam(value = "notes", required = false) String notes,
                                     RedirectAttributes redirectAttributes) {
         User user = currentUser();
-        Vendor vendor = vendorService.getVendorByEmail(user.getEmail());
+        List<BusinessProfile> profiles = businessProfileRepository.findByUserId(user.getId());
 
-        if (vendor == null) {
+        if (profiles.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage",
-                    "Vendor profile link not found. Ensure vendor email matches your login email.");
+                    "No business profile found. Please complete onboarding first.");
             return "redirect:/orders";
         }
 
         try {
+            ProcurementOrder order = procurementOrderRepository.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+
+            // Security: only the owning vendor profile can update this order
+            if (order.getVendorProfile() == null ||
+                    !order.getVendorProfile().getId().equals(profiles.get(0).getId())) {
+                throw new RuntimeException("You are not authorised to update this order");
+            }
+
+            if (order.getStatus() == ProcurementOrderStatus.REJECTED ||
+                    order.getStatus() == ProcurementOrderStatus.SUPPLIED) {
+                throw new RuntimeException("This order is already closed");
+            }
+
             ProcurementOrderStatus newStatus = ProcurementOrderStatus.valueOf(status.toUpperCase());
-            procurementOrderService.updateOrderStatusForVendor(orderId, vendor, newStatus, notes);
-            redirectAttributes.addFlashAttribute("successMessage", "Order status updated successfully.");
+            order.setStatus(newStatus);
+            if (notes != null && !notes.isBlank()) {
+                order.setVendorNotes(notes.trim());
+            }
+            if (newStatus == ProcurementOrderStatus.SUPPLIED) {
+                order.setSuppliedAt(LocalDateTime.now());
+            }
+            procurementOrderRepository.save(order);
+            redirectAttributes.addFlashAttribute("successMessage", "Order status updated to " + newStatus + ".");
         } catch (IllegalArgumentException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Invalid status value: " + status);
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid status: " + status);
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }

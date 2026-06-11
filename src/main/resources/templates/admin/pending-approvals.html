@@ -120,22 +120,24 @@
     <script th:inline="javascript">
         var currentRejectProfileId = null;
 
+        // Read XSRF-TOKEN from cookie — set by CookieCsrfTokenRepository
         function getCsrfToken() {
-            var meta = document.querySelector('meta[name="_csrf"]');
-            return meta ? meta.getAttribute('content') : '';
+            var match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+            return match ? decodeURIComponent(match[1]) : '';
         }
 
         function showAlert(message, type) {
             var alert = document.getElementById('actionAlert');
             alert.className = 'alert alert-' + type;
             alert.textContent = message;
+            alert.classList.remove('d-none');
         }
 
         function approveProfile(profileId) {
             if (!confirm('Approve this business profile? This will set status to VERIFIED & stage to ACTIVE.')) return;
             fetch('/admin/onboarding/approve/' + profileId, {
                 method: 'POST',
-                headers: { 'X-CSRF-Token': getCsrfToken() }
+                headers: { 'X-XSRF-TOKEN': getCsrfToken() }
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
@@ -145,6 +147,9 @@
                 } else {
                     showAlert('Error: ' + data.message, 'danger');
                 }
+            })
+            .catch(function(err) {
+                showAlert('Request failed: ' + err, 'danger');
             });
         }
 
@@ -160,7 +165,7 @@
             $('#rejectModal').modal('hide');
             fetch('/admin/onboarding/reject/' + currentRejectProfileId + '?reason=' + encodeURIComponent(reason), {
                 method: 'POST',
-                headers: { 'X-CSRF-Token': getCsrfToken() }
+                headers: { 'X-XSRF-TOKEN': getCsrfToken() }
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
@@ -170,6 +175,9 @@
                 } else {
                     showAlert('Error: ' + data.message, 'danger');
                 }
+            })
+            .catch(function(err) {
+                showAlert('Request failed: ' + err, 'danger');
             });
         }
     </script>

@@ -1,8 +1,9 @@
 package com.example.IMS.controller;
 
-import com.example.IMS.model.BusinessProfile;
-import com.example.IMS.model.User;
-import com.example.IMS.repository.BusinessProfileRepository;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpSession;
-import java.util.List;
+import com.example.IMS.model.BusinessProfile;
+import com.example.IMS.model.User;
+import com.example.IMS.repository.BusinessProfileRepository;
 
 /**
  * Onboarding Flow Controller
@@ -44,8 +49,13 @@ public class OnboardingController {
         User currentUser = currentUser();
         List<BusinessProfile> profiles = businessProfileRepository.findByUserId(currentUser.getId());
 
+        boolean isVerified = profiles.stream()
+                .anyMatch(p -> p.getVerificationStatus() != null &&
+                               "VERIFIED".equals(p.getVerificationStatus().name()));
+
         model.addAttribute("hasProfile", !profiles.isEmpty());
         model.addAttribute("profiles", profiles);
+        model.addAttribute("isVerified", isVerified);
         return "onboarding/required";
     }
 

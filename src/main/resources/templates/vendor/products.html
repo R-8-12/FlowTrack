@@ -3,62 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle} + ' - FlowTrack'">Product Catalog - FlowTrack</title>
+    <title>Product Catalog - FlowTrack</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #f8fafc; }
-        .placeholder-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-        .placeholder-card {
-            background: white;
-            border-radius: 16px;
-            padding: 3rem;
-            max-width: 600px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        .placeholder-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #ebf8ff 0%, #e3f2fd 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 2rem;
-            color: #2b6cb0;
-        }
-        h1 { font-size: 1.75rem; font-weight: 700; color: #2d3748; margin-bottom: 1rem; }
-        .message { color: #718096; font-size: 1rem; line-height: 1.6; margin-bottom: 2rem; }
-        .btn-primary { background: #2b6cb0; border-color: #2b6cb0; padding: 0.75rem 1.5rem; }
-        .btn-primary:hover { background: #2c5282; border-color: #2c5282; }
+        .sidebar { width:260px; min-height:100vh; background:linear-gradient(180deg,#1a365d 0%,#2a4a7f 100%); position:fixed; top:0; left:0; display:flex; flex-direction:column; z-index:100; }
+        .sidebar-brand { padding:1.5rem; border-bottom:1px solid rgba(255,255,255,0.1); color:white; }
+        .sidebar-brand h4 { font-weight:700; margin:0; font-size:1.2rem; }
+        .nav-item-label { padding:0.35rem 1.5rem; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.4); margin-top:0.75rem; }
+        .sidebar a { display:flex; align-items:center; padding:0.7rem 1.5rem; color:rgba(255,255,255,0.75); text-decoration:none; font-size:0.9rem; transition:all 0.2s; gap:0.75rem; }
+        .sidebar a:hover, .sidebar a.active { background:rgba(255,255,255,0.1); color:white; }
+        .sidebar a i { width:20px; text-align:center; }
+        .sidebar-footer { padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.1); }
+        .main-content { margin-left:260px; min-height:100vh; }
+        .topbar { background:white; border-bottom:1px solid #e2e8f0; padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
+        .page-body { padding:2rem; }
+        .empty-card { background:white; border-radius:14px; border:1px solid #e2e8f0; padding:3rem; text-align:center; }
+        .product-card { background:white; border-radius:12px; border:1px solid #e2e8f0; padding:1.25rem; transition:box-shadow 0.2s; }
+        .product-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.08); }
+        .product-price { font-size:1.3rem; font-weight:700; color:#2b6cb0; }
+        .product-meta { font-size:0.82rem; color:#718096; }
+        .badge-category { background:#f0f4ff; color:#3b5bdb; border:1px solid #d0d9ff; border-radius:20px; padding:0.2rem 0.65rem; font-size:0.75rem; font-weight:600; }
     </style>
 </head>
 <body>
-    <div class="placeholder-container">
-        <div class="placeholder-card">
-            <div class="placeholder-icon">
-                <i class="fas fa-box-open"></i>
-            </div>
-            <h1 th:text="${pageTitle}">Product Catalog</h1>
-            <p class="message" th:text="${message}">
-                Product catalog management coming soon. You'll be able to list, edit, and manage your product inventory here.
-            </p>
-            <div class="d-flex gap-2 justify-content-center">
-                <a href="/vendor/dashboard" class="btn btn-primary">
-                    <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
-                </a>
-            </div>
+
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <h4><i class="fas fa-warehouse me-2"></i>FlowTrack</h4>
+        <small style="opacity:0.6;font-size:0.75rem;">Vendor Portal</small>
+    </div>
+    <nav style="padding:1rem 0;flex:1;">
+        <div class="nav-item-label">Main</div>
+        <a href="/vendor/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/business-profile/status"><i class="fas fa-building"></i> Business Profile</a>
+        <div class="nav-item-label">Catalog</div>
+        <a href="/products" class="active"><i class="fas fa-box-open"></i> Product Catalog</a>
+        <a href="/orders"><i class="fas fa-shopping-cart"></i> Orders</a>
+        <div class="nav-item-label">Network</div>
+        <a href="/vendor/retailers"><i class="fas fa-store"></i> Retailer Network</a>
+        <div class="nav-item-label">Account</div>
+        <a href="/onboarding/required"><i class="fas fa-tasks"></i> Onboarding</a>
+    </nav>
+    <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:0.85rem;cursor:pointer;padding:0;display:flex;align-items:center;gap:0.5rem;">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h5 style="margin:0;font-weight:600;color:#2d3748;">Product Catalog</h5>
+            <small class="text-muted">Products visible to connected retailers</small>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <span class="badge" style="background:#ebf8ff;color:#2b6cb0;border:1px solid #bee3f8;">VENDOR</span>
+            <a href="/products/add" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Add Product
+            </a>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="page-body">
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show mb-3">
+            <i class="fas fa-check-circle me-2"></i><span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- No profile -->
+        <div th:if="${!hasProfile}" class="empty-card">
+            <i class="fas fa-building fa-3x text-muted mb-3 d-block"></i>
+            <h5 class="mb-2">Business Profile Required</h5>
+            <p class="text-muted mb-4">Create a business profile first to start listing products.</p>
+            <a href="/business-profile/create" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Create Business Profile
+            </a>
+        </div>
+
+        <!-- Empty catalog -->
+        <div th:if="${hasProfile and products.isEmpty()}" class="empty-card">
+            <i class="fas fa-box-open fa-3x text-muted mb-3 d-block"></i>
+            <h5 class="mb-2">No products listed yet</h5>
+            <p class="text-muted mb-4">Add your first product to make it discoverable by connected retailers.</p>
+            <a href="/products/add" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>List Your First Product
+            </a>
+        </div>
+
+        <!-- Product grid -->
+        <div th:if="${hasProfile and !products.isEmpty()}">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4" th:each="product : ${products}">
+                    <div class="product-card h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge-category" th:text="${product.category}">Category</span>
+                            <span class="product-price">₹<span th:text="${#numbers.formatDecimal(product.pricePerUnit, 1, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                        </div>
+                        <h6 class="fw-600 mb-1" th:text="${product.name}">Product Name</h6>
+                        <p class="product-meta mb-2" th:if="${product.description != null and !product.description.isEmpty()}"
+                           th:text="${#strings.abbreviate(product.description, 80)}">Description</p>
+                        <div class="d-flex gap-3 product-meta">
+                            <span><i class="fas fa-cubes me-1"></i><span th:text="${product.availableQuantity}">0</span> <span th:text="${product.unit}">units</span></span>
+                            <span><i class="fas fa-truck me-1"></i><span th:text="${product.deliveryDays}">0</span> days</span>
+                            <span th:if="${product.sku != null and !product.sku.isEmpty()}">
+                                <i class="fas fa-barcode me-1"></i><span th:text="${product.sku}">SKU</span>
+                            </span>
+                        </div>
+                        <div th:if="${product.minimumOrderQuantity != null and product.minimumOrderQuantity > 1}" class="product-meta mt-1">
+                            <i class="fas fa-box me-1"></i>Min order: <span th:text="${product.minimumOrderQuantity}">1</span> <span th:text="${product.unit}">units</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

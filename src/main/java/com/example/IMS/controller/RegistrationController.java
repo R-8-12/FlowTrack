@@ -1,13 +1,8 @@
 package com.example.IMS.controller;
 
-import com.example.IMS.config.GoogleOAuth2SuccessHandler;
-import com.example.IMS.dto.RetailerRegistrationDto;
-import com.example.IMS.dto.VendorRegistrationDto;
-import com.example.IMS.dto.InvestorRegistrationDto;
-import com.example.IMS.dto.UserRegistrationDto;
-import com.example.IMS.model.User;
-import com.example.IMS.service.EmailService;
-import com.example.IMS.service.UserService;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +13,21 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.validation.Valid;
-import javax.servlet.http.HttpServletRequest;
+import com.example.IMS.config.GoogleOAuth2SuccessHandler;
+import com.example.IMS.dto.InvestorRegistrationDto;
+import com.example.IMS.dto.RetailerRegistrationDto;
+import com.example.IMS.dto.UserRegistrationDto;
+import com.example.IMS.dto.VendorRegistrationDto;
+import com.example.IMS.model.User;
+import com.example.IMS.service.EmailService;
+import com.example.IMS.service.UserService;
 
 @Controller
 @RequestMapping("/register")
@@ -146,6 +151,9 @@ public class RegistrationController {
                         dto.getGstNumber(),
                         dto.getPhoneNumber(),
                         dto.getBusinessAddress());
+
+                // Create retailer_profiles row for Google sign-ups (same as standard path)
+                userService.createRetailerProfile(updatedUser, dto);
 
                 refreshAuthentication(updatedUser, request);
                 request.getSession(true).removeAttribute(GoogleOAuth2SuccessHandler.PENDING_ROLE_SESSION_KEY);
@@ -273,6 +281,9 @@ public class RegistrationController {
                         dto.getGstNumber(),
                         dto.getPhoneNumber(),
                         dto.getCompanyAddress());
+
+                // Create vendor_profiles row for Google sign-ups (same as standard path)
+                userService.createVendorProfile(updatedUser, dto);
 
                 refreshAuthentication(updatedUser, request);
                 request.getSession(true).removeAttribute(GoogleOAuth2SuccessHandler.PENDING_ROLE_SESSION_KEY);
