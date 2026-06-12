@@ -30,7 +30,10 @@
 						aria-labelledby="userDropdown">
 						<a class="dropdown-item" href="/admin/users">User Management</a>
 						<div class="dropdown-divider"></div>
-						<a class="dropdown-item" href="/logout">Logout</a>
+						<form th:action="@{/logout}" method="post" style="display:inline;margin:0;">
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+							<button type="submit" class="dropdown-item" style="background:none;border:none;width:100%;text-align:left;">Logout</button>
+						</form>
 					</div></li>
 			</ul>
 		</nav>

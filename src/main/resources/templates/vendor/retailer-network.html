@@ -42,7 +42,14 @@
         <div class="nav-item-label">Network</div>
         <a href="/vendor/retailers" class="active"><i class="fas fa-store"></i> Retailer Network</a>
     </nav>
-    <div class="sidebar-footer"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a></div>
+    <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:0.85rem;cursor:pointer;padding:0;display:flex;align-items:center;gap:0.5rem;">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </form>
+    </div>
 </div>
 
 <div class="main-content">
