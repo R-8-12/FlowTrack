@@ -1,180 +1,217 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Vendor Search - FlowTrack Inventory Management">
-    <meta name="author" content="FlowTrack">
-    
-    <!-- CSRF tokens for AJAX requests -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Search - FlowTrack</title>
+
+    <!-- CSRF tokens for AJAX -->
     <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}"/>
-    
-    <title>Vendor Search - FlowTrack</title>
-    
-    <!-- Bootstrap 5 CSS -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/vendor-search.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 240px; min-height: 100vh;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            position: fixed; top: 0; left: 0;
+            display: flex; flex-direction: column; z-index: 100;
+        }
+        .sidebar-brand { padding: 1.35rem 1.4rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); color: #fff; }
+        .sidebar-brand h4 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+        .sidebar-brand small { opacity: 0.5; font-size: 0.72rem; }
+        .nav-label { padding: 0.7rem 1.4rem 0.2rem; font-size: 0.67rem; font-weight: 700;
+                     text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.35); }
+        .sidebar a { display: flex; align-items: center; gap: 0.7rem;
+                     color: rgba(255,255,255,0.65); text-decoration: none;
+                     padding: 0.55rem 1.4rem; border-left: 3px solid transparent;
+                     font-size: 0.875rem; transition: all 0.15s; }
+        .sidebar a:hover { color: #fff; background: rgba(255,255,255,0.07); }
+        .sidebar a.active { color: #a5b4fc; border-left-color: #6366f1; background: rgba(99,102,241,0.18); }
+        .sidebar a i { width: 16px; text-align: center; }
+        .sidebar-footer { padding: 1rem 1.4rem; border-top: 1px solid rgba(255,255,255,0.08); margin-top: auto; }
+
+        /* ── Main content ── */
+        .main-content { margin-left: 240px; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .topbar {
+            background: #fff; border-bottom: 1px solid #e2e8f0;
+            padding: 0.9rem 1.8rem;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .topbar h5 { margin: 0; font-weight: 700; color: #0f172a; font-size: 1rem; }
+
+        .page-body { padding: 1.5rem 1.8rem; flex: 1; }
+
+        /* ── Filter panel ── */
+        .filter-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
+                       padding: 1.25rem; position: sticky; top: 72px; }
+        .filter-card .card-title { font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
+                                   letter-spacing: 0.08em; color: #475569; margin-bottom: 1rem; }
+
+        /* ── Vendor card ── */
+        .vendor-card {
+            background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
+            height: 100%; display: flex; flex-direction: column;
+            transition: box-shadow 0.2s, transform 0.2s;
+            position: relative; overflow: hidden;
+        }
+        .vendor-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.10); transform: translateY(-2px); }
+        .vendor-card-body { padding: 1.1rem; flex: 1; }
+        .vendor-card-footer { padding: 0.9rem 1.1rem; border-top: 1px solid #f1f5f9; }
+        .vendor-name { font-weight: 700; font-size: 1rem; color: #0f172a; margin-bottom: 0.15rem; }
+        .vendor-price { font-size: 1.35rem; font-weight: 800; color: #2563eb; }
+        .vendor-meta { font-size: 0.82rem; color: #64748b; display: flex; align-items: center; gap: 0.4rem; }
+        .badge-corner { position: absolute; top: 0.6rem; right: 0.6rem; }
+        .badge-prev { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;
+                      font-size: 0.7rem; border-radius: 20px; padding: 0.18rem 0.55rem; font-weight: 600; }
+    </style>
 </head>
 <body>
-    <!-- Navigation Bar Fragment -->
-    <div th:replace="navbar :: myNavbar"></div>
-    
-    <!-- Main Content Area -->
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <!-- Left Sidebar: Filters -->
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-filter"></i> Filters</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="filterForm">
-                            <!-- Price Range Filter -->
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Price Range (₹)</label>
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <input type="number" class="form-control form-control-sm" 
-                                               id="minPrice" name="minPrice" placeholder="Min" min="0" step="0.01">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="number" class="form-control form-control-sm" 
-                                               id="maxPrice" name="maxPrice" placeholder="Max" min="0" step="0.01">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Delivery Time Filter -->
-                            <div class="mb-3">
-                                <label for="maxDeliveryDays" class="form-label fw-bold">
-                                    Max Delivery Days
-                                </label>
-                                <input type="number" class="form-control form-control-sm" 
-                                       id="maxDeliveryDays" name="maxDeliveryDays" 
-                                       placeholder="e.g., 7" min="1">
-                            </div>
-                            
-                            <!-- Minimum Stock Filter -->
-                            <div class="mb-3">
-                                <label for="minQuantity" class="form-label fw-bold">
-                                    Minimum Stock
-                                </label>
-                                <input type="number" class="form-control form-control-sm" 
-                                       id="minQuantity" name="minQuantity" 
-                                       placeholder="e.g., 100" min="1">
-                            </div>
-                            
-                            <!-- Distance Filter -->
-                            <div class="mb-3">
-                                <label for="maxDistanceKm" class="form-label fw-bold">
-                                    Max Distance (km)
-                                </label>
-                                <input type="number" class="form-control form-control-sm" 
-                                       id="maxDistanceKm" name="maxDistanceKm" 
-                                       placeholder="e.g., 50" min="0" step="0.1">
-                            </div>
-                            
-                            <!-- Sort Options -->
-                            <div class="mb-3">
-                                <label for="sortBy" class="form-label fw-bold">Sort By</label>
-                                <select class="form-select form-select-sm" id="sortBy" name="sortBy">
-                                    <option value="relevance" selected>Relevance</option>
-                                    <option value="price">Price</option>
-                                    <option value="delivery">Delivery Time</option>
-                                    <option value="rating">Rating</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Sort Direction -->
-                            <div class="mb-3">
-                                <label for="sortDirection" class="form-label fw-bold">Order</label>
-                                <select class="form-select form-select-sm" id="sortDirection" name="sortDirection">
-                                    <option value="asc">Ascending</option>
-                                    <option value="desc" selected>Descending</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Clear Filters Button -->
-                            <button type="button" class="btn btn-outline-secondary btn-sm w-100" 
-                                    id="clearFilters">
-                                <i class="fas fa-times"></i> Clear Filters
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Main Content: Search and Results -->
-            <div class="col-md-9">
-                <h1 class="mb-3">Vendor Search</h1>
-                <p>Welcome, <span th:text="${user != null ? user.username : 'User'}">User</span>!</p>
-                
-                <!-- Search Bar -->
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white">
-                                <i class="fas fa-search text-muted"></i>
-                            </span>
-                            <input type="text" class="form-control border-start-0" 
-                                   id="searchQuery" 
-                                   placeholder="Search by product name or vendor name..." 
-                                   aria-label="Search vendors">
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <h4><i class="fas fa-warehouse me-2"></i>FlowTrack</h4>
+        <small>Retailer Portal</small>
+    </div>
+    <nav style="flex:1;">
+        <div class="nav-label">Main</div>
+        <a href="/retailer/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/business-profile/status"><i class="fas fa-building"></i> Business Profile</a>
+        <div class="nav-label">Inventory</div>
+        <a href="/retailer/inventory/add"><i class="fas fa-plus-circle"></i> Add Item</a>
+        <a href="/retailer/inventory"><i class="fas fa-boxes"></i> View Inventory</a>
+        <a href="/retailer/vendor-search" class="active"><i class="fas fa-truck"></i> My Suppliers</a>
+        <div class="nav-label">Finance</div>
+        <a href="/business-profile/status"><i class="fas fa-university"></i> Bank Details</a>
+        <div class="nav-label">Reports</div>
+        <a href="/reports"><i class="fas fa-chart-bar"></i> Reports</a>
+        <div class="nav-label">Account</div>
+        <a href="/onboarding/required"><i class="fas fa-tasks"></i> Onboarding</a>
+    </nav>
+    <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" style="background:none;border:none;color:rgba(255,255,255,0.55);font-size:0.85rem;cursor:pointer;padding:0;display:flex;align-items:center;gap:0.5rem;">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Main -->
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h5>Vendor Search</h5>
+            <small class="text-muted">Find and connect with verified suppliers</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;">
+                <span th:text="${user != null ? user.firstName + ' ' + user.lastName : ''}"></span>
+            </span>
+            <span class="badge text-bg-primary">RETAILER</span>
+        </div>
+    </div>
+
+    <div class="page-body">
+        <div class="row g-4">
+
+            <!-- ── Filter Panel ── -->
+            <div class="col-lg-3 col-md-4">
+                <div class="filter-card">
+                    <div class="card-title"><i class="fas fa-filter me-1"></i>Filters</div>
+
+                    <label class="form-label small fw-semibold">Price Range (₹)</label>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <input type="number" class="form-control form-control-sm" id="minPrice" placeholder="Min" min="0" step="0.01">
+                        </div>
+                        <div class="col-6">
+                            <input type="number" class="form-control form-control-sm" id="maxPrice" placeholder="Max" min="0" step="0.01">
                         </div>
                     </div>
+
+                    <label class="form-label small fw-semibold">Max Delivery Days</label>
+                    <input type="number" class="form-control form-control-sm mb-3" id="maxDeliveryDays" placeholder="e.g., 7" min="1">
+
+                    <label class="form-label small fw-semibold">Minimum Stock</label>
+                    <input type="number" class="form-control form-control-sm mb-3" id="minQuantity" placeholder="e.g., 100" min="1">
+
+                    <label class="form-label small fw-semibold">Max Distance (km)</label>
+                    <input type="number" class="form-control form-control-sm mb-3" id="maxDistanceKm" placeholder="e.g., 50" min="0" step="0.1">
+
+                    <label class="form-label small fw-semibold">Sort By</label>
+                    <select class="form-select form-select-sm mb-3" id="sortBy">
+                        <option value="relevance" selected>Relevance</option>
+                        <option value="price">Price</option>
+                        <option value="delivery">Delivery Time</option>
+                        <option value="rating">Rating</option>
+                    </select>
+
+                    <label class="form-label small fw-semibold">Order</label>
+                    <select class="form-select form-select-sm mb-3" id="sortDirection">
+                        <option value="asc">Ascending</option>
+                        <option value="desc" selected>Descending</option>
+                    </select>
+
+                    <button type="button" class="btn btn-outline-secondary btn-sm w-100" id="clearFilters">
+                        <i class="fas fa-times me-1"></i>Clear Filters
+                    </button>
                 </div>
-                
-                <!-- Loading Indicator -->
-                <div id="loadingIndicator" class="text-center my-4" style="display: none;">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2 text-muted">Searching for vendors...</p>
+            </div>
+
+            <!-- ── Results Area ── -->
+            <div class="col-lg-9 col-md-8">
+
+                <!-- Search bar -->
+                <div class="input-group mb-3" style="max-width:600px;">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0" id="searchQuery"
+                           placeholder="Search by product name or vendor name…">
                 </div>
-                
-                <!-- Results Count -->
-                <div id="resultsCount" class="mb-3" style="display: none;">
-                    <p class="text-muted">
-                        <i class="fas fa-info-circle"></i> 
-                        Found <strong id="totalResults">0</strong> vendors
-                    </p>
+
+                <!-- Loading -->
+                <div id="loadingIndicator" class="text-center py-5" style="display:none;">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-2 text-muted small">Searching vendors…</p>
                 </div>
-                
-                <!-- Vendor Grid -->
-                <div id="vendorGrid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
-                    <!-- Vendor cards will be dynamically inserted here by JavaScript -->
+
+                <!-- Count -->
+                <p id="resultsCount" class="text-muted small mb-3" style="display:none;">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Found <strong id="totalResults">0</strong> vendors
+                </p>
+
+                <!-- ── Vendor Grid ── -->
+                <div id="vendorGrid" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mb-4"></div>
+
+                <!-- No results -->
+                <div id="noResults" class="text-center py-5" style="display:none;">
+                    <i class="fas fa-search fa-3x text-muted mb-3 d-block"></i>
+                    <h5 class="text-muted">No vendors found</h5>
+                    <p class="text-muted small">Try adjusting your search or filters</p>
                 </div>
-                
-                <!-- No Results Message -->
-                <div id="noResults" class="text-center my-5" style="display: none;">
-                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">No vendors found</h4>
-                    <p class="text-muted">Try adjusting your search criteria or filters</p>
-                </div>
-                
-                <!-- Pagination Controls -->
-                <nav id="paginationNav" aria-label="Vendor search pagination" style="display: none;">
-                    <ul id="paginationControls" class="pagination justify-content-center">
-                        <!-- Pagination buttons will be dynamically inserted here by JavaScript -->
-                    </ul>
+
+                <!-- Pagination -->
+                <nav id="paginationNav" style="display:none;">
+                    <ul id="paginationControls" class="pagination justify-content-center"></ul>
                 </nav>
             </div>
         </div>
     </div>
-    
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom Vendor Search JavaScript -->
-    <script src="/js/vendor-search.js"></script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/vendor-search.js"></script>
 </body>
 </html>

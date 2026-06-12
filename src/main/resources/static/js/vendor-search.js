@@ -240,77 +240,55 @@ function renderResults(data) {
  * Requirements: 17.1-17.11
  */
 function createVendorCard(vendor) {
-    const badgeHtml = vendor.badge !== 'NONE' ? 
-        `<span class="badge bg-${getBadgeColor(vendor.badge)} position-absolute top-0 end-0 m-2">
-            ${vendor.badge.replace(/_/g, ' ')}
-        </span>` : '';
-    
-    const previousOrderHtml = vendor.previouslyOrdered ? 
-        `<span class="badge bg-info text-dark">
-            <i class="fas fa-history"></i> Previously Ordered
-        </span>` : '';
-    
-    const verifiedIcon = vendor.verified ? 
-        '<i class="fas fa-check-circle text-success" title="Verified"></i>' : '';
-    
-    // Connection state button — will be updated asynchronously
+    const badgeHtml = vendor.badge && vendor.badge !== 'NONE'
+        ? `<span class="badge badge-corner bg-${getBadgeColor(vendor.badge)}">${vendor.badge.replace(/_/g, ' ')}</span>`
+        : '';
+
+    const prevHtml = vendor.previouslyOrdered
+        ? `<span class="badge-prev ms-1"><i class="fas fa-history me-1"></i>Previously Ordered</span>`
+        : '';
+
+    const verifiedIcon = vendor.verified
+        ? `<i class="fas fa-check-circle text-success ms-1" title="Verified"></i>`
+        : '';
+
     const connectionBtnId = `conn-btn-${vendor.vendorId}`;
-    
+
     return `
         <div class="col">
-            <div class="card h-100 shadow-sm vendor-card" data-vendor-id="${vendor.vendorId}">
+            <div class="vendor-card">
                 ${badgeHtml}
-                <div class="card-body">
-                    <h5 class="card-title">
-                        ${vendor.vendorName} ${verifiedIcon}
-                    </h5>
-                    
-                    <div class="vendor-details">
-                        <p class="mb-2">
-                            <strong>Price:</strong> 
-                            <span class="text-primary fs-5">₹${vendor.pricePerUnit.toFixed(2)}</span> per unit
-                        </p>
-                        
-                        <p class="mb-2">
-                            <i class="fas fa-box text-muted"></i>
-                            <strong>Stock Available:</strong> ${vendor.availableQuantity} units
-                        </p>
-                        
-                        <p class="mb-2">
-                            <i class="fas fa-truck text-muted"></i>
-                            <strong>Delivery Time:</strong> ${vendor.deliveryDays} days
-                        </p>
-                        
-                        <p class="mb-2">
-                            <i class="fas fa-chart-line text-muted"></i>
-                            <strong>Reliability:</strong> ${(vendor.reliabilityScore * 100).toFixed(0)}%
-                        </p>
-                        
-                        <p class="mb-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <strong>Rating:</strong> ${vendor.rating.toFixed(1)} / 5.0
-                        </p>
-                        
-                        <p class="mb-2">
-                            <i class="fas fa-map-marker-alt text-muted"></i>
-                            ${vendor.location}
-                        </p>
-                        
-                        ${previousOrderHtml}
+                <div class="vendor-card-body">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div>
+                            <div class="vendor-name">${vendor.vendorName}${verifiedIcon}</div>
+                            <div class="vendor-meta"><i class="fas fa-map-marker-alt"></i>${vendor.location}</div>
+                        </div>
                     </div>
+
+                    <div class="vendor-price mb-2">₹${vendor.pricePerUnit.toFixed(2)} <small class="text-muted fw-normal" style="font-size:0.8rem;">/ unit</small></div>
+
+                    <div class="d-flex flex-column gap-1 mb-2">
+                        <div class="vendor-meta"><i class="fas fa-boxes"></i><strong>${vendor.availableQuantity}</strong> units in stock</div>
+                        <div class="vendor-meta"><i class="fas fa-truck"></i>Delivers in <strong>${vendor.deliveryDays}</strong> days</div>
+                        <div class="vendor-meta"><i class="fas fa-chart-line"></i>Reliability: <strong>${(vendor.reliabilityScore * 100).toFixed(0)}%</strong></div>
+                        <div class="vendor-meta"><i class="fas fa-star text-warning"></i>Rating: <strong>${vendor.rating.toFixed(1)}</strong> / 5.0</div>
+                    </div>
+                    ${prevHtml}
                 </div>
-                
-                <div class="card-footer bg-white border-top-0">
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-primary btn-sm" onclick="viewVendorDetails(${vendor.vendorId})">
-                            <i class="fas fa-eye"></i> View Details
-                        </button>
-                        <button class="btn btn-outline-success btn-sm" onclick="placeOrder(${vendor.vendorId})">
-                            <i class="fas fa-shopping-cart"></i> Order Now
-                        </button>
+                <div class="vendor-card-footer">
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary btn-sm flex-fill" onclick="viewVendorDetails(${vendor.vendorId})">
+                                <i class="fas fa-eye me-1"></i>Details
+                            </button>
+                            <button class="btn btn-outline-success btn-sm flex-fill" onclick="placeOrder(${vendor.vendorId})">
+                                <i class="fas fa-shopping-cart me-1"></i>Order
+                            </button>
+                        </div>
                         <div id="${connectionBtnId}">
                             <button class="btn btn-outline-secondary btn-sm w-100" disabled>
-                                <span class="spinner-border spinner-border-sm"></span>
+                                <span class="spinner-border spinner-border-sm me-1"></span>Loading…
                             </button>
                         </div>
                     </div>
@@ -489,7 +467,7 @@ function showLoading(show) {
         loadingIndicator.style.display = show ? 'block' : 'none';
     }
     if (vendorGrid) {
-        vendorGrid.style.display = show ? 'none' : 'block';
+        vendorGrid.style.display = show ? 'none' : '';
     }
 }
 
@@ -529,12 +507,13 @@ function getBadgeColor(badge) {
  * Navigate to vendor details page
  */
 function viewVendorDetails(vendorId) {
-    window.location.href = `/retailer/vendor/${vendorId}`;
+    window.location.href = `/retailer/vendor-search`;
 }
 
 /**
- * Navigate to order creation page with vendor pre-selected
+ * Navigate to order creation page with vendor pre-selected.
+ * Uses the existing /retailer/inventory/add form which supports supplier requests.
  */
 function placeOrder(vendorId) {
-    window.location.href = `/retailer/order/create?vendorId=${vendorId}`;
+    window.location.href = `/retailer/inventory/add?vendorId=${vendorId}`;
 }

@@ -100,7 +100,7 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-3">
                     <div class="order-card p-3 text-center">
-                        <div style="font-size:1.6rem; font-weight:700; color:#2d3748;" 
+                        <div style="font-size:1.6rem; font-weight:700; color:#2d3748;"
                              th:text="${orders.size()}">0</div>
                         <div class="text-muted" style="font-size:0.82rem;">Total Orders</div>
                     </div>
@@ -108,21 +108,21 @@
                 <div class="col-md-3">
                     <div class="order-card p-3 text-center">
                         <div style="font-size:1.6rem; font-weight:700; color:#b45309;"
-                             th:text="${orders.stream().filter(o -> o.status.name() == 'REQUESTED').count()}">0</div>
+                             th:text="${#lists.size(#lists.toList(orders.?[status.name() == 'REQUESTED']))}">0</div>
                         <div class="text-muted" style="font-size:0.82rem;">Pending</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="order-card p-3 text-center">
                         <div style="font-size:1.6rem; font-weight:700; color:#1d4ed8;"
-                             th:text="${orders.stream().filter(o -> o.status.name() == 'ACCEPTED').count()}">0</div>
+                             th:text="${#lists.size(#lists.toList(orders.?[status.name() == 'ACCEPTED']))}">0</div>
                         <div class="text-muted" style="font-size:0.82rem;">Accepted</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="order-card p-3 text-center">
                         <div style="font-size:1.6rem; font-weight:700; color:#15803d;"
-                             th:text="${orders.stream().filter(o -> o.status.name() == 'SUPPLIED').count()}">0</div>
+                             th:text="${#lists.size(#lists.toList(orders.?[status.name() == 'SUPPLIED']))}">0</div>
                         <div class="text-muted" style="font-size:0.82rem;">Supplied</div>
                     </div>
                 </div>

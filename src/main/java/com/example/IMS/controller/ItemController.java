@@ -17,6 +17,7 @@ import com.example.IMS.dto.ItemDto;
 import com.example.IMS.model.Item;
 import com.example.IMS.model.ItemType;
 import com.example.IMS.model.Vendor;
+import com.example.IMS.repository.BusinessProfileRepository;
 import com.example.IMS.service.ItemService;
 import com.example.IMS.service.ItemTypeService;
 import com.example.IMS.service.VendorService;
@@ -35,9 +36,12 @@ public class ItemController {
 
 	@Autowired
 	private ItemConvertor itemConvertor;
-	
+
 	@Autowired
 	private com.example.IMS.service.DashboardTrackingService dashboardTrackingService;
+
+	@Autowired
+	private BusinessProfileRepository businessProfileRepository;
 
 	@GetMapping("/ItemView")
 	public String View(Model model) {
@@ -60,8 +64,19 @@ public class ItemController {
 
 	/** New modern Add Item form (retailer UI) */
 	@GetMapping({"/retailer/inventory/add", "/items/add", "/retailer/items/add"})
-	public String retailerAddItem(Model model) {
-		model.addAttribute("itemDto", new ItemDto());
+	public String retailerAddItem(
+			@org.springframework.web.bind.annotation.RequestParam(name = "vendorId", required = false) Long vendorId,
+			Model model) {
+		ItemDto dto = new ItemDto();
+
+		// Pre-fill vendor name when arriving from vendor search "Order Now" button
+		if (vendorId != null) {
+			businessProfileRepository.findById(vendorId)
+					.ifPresent(bp -> dto.setVendorName(bp.getLegalBusinessName()));
+			model.addAttribute("prefilledVendorId", vendorId);
+		}
+
+		model.addAttribute("itemDto", dto);
 		model.addAttribute("itemTypeList", itemTypeService.getAllItemTypes());
 		return "retailer/item-create";
 	}
